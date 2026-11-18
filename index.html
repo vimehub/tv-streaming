@@ -5,519 +5,279 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="color-scheme" content="dark light"/>
 <link rel="icon" href="data:,"/>
-<title>TV Streaming Indonesia & Luar Negeri</title>
+<title>TV Streaming — Nonton TV Langsung</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
 <style>
   :root{
-    --bg:#0b0e14; --bg2:#11151f; --card:#171c28; --card2:#1e2534; --line:#262e42;
-    --text:#f2f4f8; --muted:#9aa3b5; --muted2:#c6cdd9;
-    --red:#e62117; --red2:#ff3b30; --blue:#2563eb; --gold:#f5b301;
-    --indo:#e70011; --world:#0ea5e9;
-    --radius:16px;
+    --bg:#0a0d13; --bg2:#10141d; --card:#161b26; --card2:#1d2432; --line:#252d3f;
+    --text:#f2f4f8; --muted:#98a2b5; --muted2:#c9d1de;
+    --red:#e62117; --red2:#ff3b30; --green:#22c55e;
+    --radius:14px;
   }
   @media (prefers-color-scheme: light){
-    :root{ --bg:#f4f5f7; --bg2:#fff; --card:#fff; --card2:#f1f3f6; --line:#e2e6ec; --text:#111827; --muted:#6b7280; --muted2:#374151; }
+    :root{ --bg:#f2f3f6; --bg2:#fff; --card:#fff; --card2:#eef1f5; --line:#dde2ea; --text:#111827; --muted:#66707f; --muted2:#374151; }
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-  a{color:inherit}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   button,input{font:inherit}
-  button,[role="button"]{min-height:44px}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 16px 40px}
-  /* HERO / INTRO */
-  .hero{padding:22px 0 6px}
-  .hero-top{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:space-between}
-  .hero h1{font-size:clamp(26px,5vw,42px);line-height:.95;letter-spacing:-.03em;margin:0;font-weight:900}
-  .hero h1 span{color:var(--red2)}
-  .hero h1 em{font-style:normal;color:var(--world)}
-  .hero p{color:var(--muted);max-width:620px;line-height:1.6;margin:10px 0 0;font-size:15px}
-  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:13px;display:flex;gap:8px;align-items:center}
-  .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.18);animation:pulse 1.6s infinite}
-  @keyframes pulse{50%{opacity:.5}}
+  button{min-height:44px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 14px 36px}
+
+  /* TOP BAR */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 12px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand .tv-ic{width:40px;height:40px;border-radius:10px;background:var(--red);display:grid;place-items:center;color:#fff;font-size:19px}
+  .brand b{font-size:19px;letter-spacing:-.01em;display:block;line-height:1.1}
+  .brand span{font-size:12.5px;color:var(--muted)}
+  .live-count{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(34,197,94,.16);animation:pulse 1.6s infinite}
+  @keyframes pulse{50%{opacity:.45}}
+
   /* PLAYER */
-  .player-shell{margin-top:18px;background:#000;border:1px solid var(--line);border-radius:20px;overflow:hidden}
-  .player-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .player-shell{background:#000;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .video-wrap{position:relative;background:#000;aspect-ratio:16/9;max-height:72vh;margin:0 auto;width:100%}
+  .video-wrap video{width:100%;height:100%;display:block;background:#000}
+  .buffering{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,0,0,.35);color:#fff;font-size:14px;font-weight:600;gap:10px;text-align:center;padding:16px}
+  .buffering.show{display:grid}
+  .spinner{width:38px;height:38px;border-radius:50%;border:4px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .8s linear infinite;margin:0 auto}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .player-msg{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(0,0,0,.86);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;display:none}
+  .player-msg.show{display:block}
+  .nowbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:13px 15px;background:var(--bg2);border-top:1px solid var(--line)}
   .now{display:flex;gap:12px;align-items:center;min-width:0}
-  .now-logo{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:13px;color:#fff;flex-shrink:0;text-align:center;line-height:1;padding:4px}
-  .now b{font-size:16px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .now span{font-size:12.5px;color:var(--muted)}
-  .live-badge{background:var(--red);color:#fff;font-weight:800;font-size:11px;letter-spacing:.08em;padding:6px 9px;border-radius:999px;display:inline-flex;gap:6px;align-items:center}
+  .now-logo{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:12.5px;color:#fff;flex-shrink:0;text-align:center;line-height:1.05;padding:4px}
+  .now b{font-size:17px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .now span{font-size:12.5px;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52vw}
+  .live-badge{background:var(--red);color:#fff;font-weight:800;font-size:11px;letter-spacing:.08em;padding:6px 9px;border-radius:999px;display:inline-flex;gap:6px;align-items:center;flex-shrink:0}
   .live-badge i{width:6px;height:6px;background:#fff;border-radius:50%;display:block}
   .player-actions{display:flex;gap:8px;flex-wrap:wrap}
-  .btn{border:1px solid var(--line);background:var(--card);color:var(--text);padding:0 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:13.5px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+  .btn{border:1px solid var(--line);background:var(--card);color:var(--text);padding:0 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:13.5px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px}
   .btn.primary{background:var(--red);border-color:var(--red);color:#fff}
-  .video-wrap{position:relative;background:#000;aspect-ratio:16/9}
-  .video-wrap video{width:100%;height:100%;display:block;background:#000}
-  .player-msg{position:absolute;inset:auto 12px 12px 12px;background:rgba(0,0,0,.82);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.5;display:none}
-  .player-msg.show{display:block}
-  .player-foot{padding:10px 14px;background:var(--bg2);color:var(--muted);font-size:12.5px;line-height:1.6;border-top:1px solid var(--line)}
+
   /* CONTROLS */
-  .controls{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 10px;border-bottom:1px solid var(--line)}
-  .search{width:100%;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:0 16px;height:48px;color:var(--text);outline:none}
+  .controls{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 10px}
+  .search{width:100%;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:0 16px;height:48px;color:var(--text);outline:none;font-size:15px}
   .search::placeholder{color:var(--muted)}
   .pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .pill{border:1px solid var(--line);background:var(--card);color:var(--muted2);padding:0 14px;border-radius:999px;cursor:pointer;font-weight:700;font-size:13px}
+  .pill{border:1px solid var(--line);background:var(--card);color:var(--muted2);padding:0 14px;border-radius:999px;cursor:pointer;font-weight:700;font-size:13px;min-height:38px}
   .pill.active{background:var(--text);color:var(--bg);border-color:var(--text)}
-  .pill.indo.active{background:var(--indo);border-color:var(--indo);color:#fff}
-  .pill.world.active{background:#0369a1;border-color:#0369a1;color:#fff}
-  /* SECTIONS */
-  .section{margin-top:28px}
-  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-  .section-head h2{margin:0;font-size:22px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
-  .flag{font-size:13px;font-weight:800;letter-spacing:.06em;padding:7px 10px;border-radius:999px;color:#fff}
-  .flag.indo{background:linear-gradient(180deg,#e70011 50%,#e5e7eb 50%);color:#111;border:1px solid var(--line);text-shadow:none}
-  .flag.indo span{background:#fff;padding:2px 6px;border-radius:999px}
-  .flag.world{background:#0369a1}
-  .section-head p{margin:4px 0 0;color:var(--muted);font-size:13.5px}
-  .count{font-size:13px;color:var(--muted);background:var(--card);border:1px solid var(--line);padding:8px 11px;border-radius:999px}
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-  @media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr);gap:14px}}
-  @media(min-width:900px){.grid{grid-template-columns:repeat(4,1fr)}}
-  @media(min-width:1100px){.grid{grid-template-columns:repeat(5,1fr)}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;text-align:left;padding:0;width:100%;color:var(--text);transition:transform .15s, border-color .15s}
-  .card:hover{transform:translateY(-2px);border-color:#3a4560}
-  .card.playing{outline:2px solid var(--red);outline-offset:1px}
-  .logo-box{height:92px;display:grid;place-items:center;position:relative;padding:14px}
-  .logo-text{font-weight:900;letter-spacing:-.02em;line-height:.9;text-align:center;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.25);font-size:22px;word-break:break-word}
-  .logo-sub{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.9;font-weight:700;text-align:center;margin-top:4px;color:#fff}
-  .live-mini{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;font-weight:800;letter-spacing:.07em;padding:5px 7px;border-radius:999px;display:flex;gap:5px;align-items:center}
-  .live-mini i{width:6px;height:6px;background:#ff3b30;border-radius:50%;display:block}
-  .card-body{padding:12px 12px 13px}
+
+  /* CHANNEL GRID */
+  .list-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:16px 0 12px}
+  .list-head h2{margin:0;font-size:19px;letter-spacing:-.01em}
+  .list-head span{font-size:13px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+  @media(min-width:620px){.grid{grid-template-columns:repeat(3,1fr);gap:13px}}
+  @media(min-width:920px){.grid{grid-template-columns:repeat(4,1fr)}}
+  @media(min-width:1120px){.grid{grid-template-columns:repeat(5,1fr)}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;cursor:pointer;text-align:left;padding:0;width:100%;color:var(--text)}
+  .card:hover{border-color:#3d4a66}
+  .card.playing{outline:2px solid var(--red);outline-offset:1px;border-color:var(--red)}
+  .logo-box{height:84px;display:grid;place-items:center;position:relative;padding:12px}
+  .logo-text{font-weight:900;letter-spacing:-.02em;line-height:.95;text-align:center;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.3);font-size:21px}
+  .logo-sub{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.92;font-weight:700;text-align:center;margin-top:4px;color:#fff}
+  .onair{position:absolute;top:9px;right:9px;background:rgba(0,0,0,.72);color:#fff;font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:4px 7px;border-radius:999px;display:flex;gap:5px;align-items:center}
+  .onair i{width:6px;height:6px;background:#ff3b30;border-radius:50%;display:block}
+  .card-body{padding:11px 12px 12px}
   .card-body b{font-size:14.5px;display:block;line-height:1.25}
-  .card-body span{font-size:12.5px;color:var(--muted);display:block;margin-top:3px;line-height:1.4}
-  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
-  .tag{font-size:11px;font-weight:700;padding:5px 7px;border-radius:999px;background:var(--card2);border:1px solid var(--line);color:var(--muted2)}
-  .play-row{margin-top:11px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800}
-  .play-ic{width:28px;height:28px;border-radius:50%;background:var(--red);display:grid;place-items:center;color:#fff;font-size:12px;flex-shrink:0}
-  /* FLAG GRID */
-  .flag-wrap{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px}
-  .flag-wrap-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
-  .flag-wrap-head b{font-size:14px}
-  .flag-wrap-head span{font-size:12.5px;color:var(--muted)}
-  .flag-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  @media(min-width:640px){.flag-grid{grid-template-columns:repeat(5,1fr)}}
-  @media(min-width:900px){.flag-grid{grid-template-columns:repeat(7,1fr)}}
-  .flag-btn{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:10px 6px 9px;cursor:pointer;color:var(--text);text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:76px;justify-content:center}
-  .flag-btn:hover{border-color:#3a4560}
-  .flag-btn.active{border-color:var(--world);background:#082f49;outline:2px solid var(--world);outline-offset:0}
-  @media (prefers-color-scheme: light){.flag-btn.active{background:#e0f2fe}}
-  .flag-btn .f{font-size:28px;line-height:1}
-  .flag-btn .n{font-size:11.5px;font-weight:800;line-height:1.2}
-  .flag-btn .c{font-size:11px;color:var(--muted)}
-  .flag-btn.asia{border-color:rgba(14,165,233,.45)}
-  .selected-line{font-size:13px;color:var(--muted2);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 12px;display:none;margin-bottom:12px}
-  .selected-line.show{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .selected-line button{border:none;background:var(--red);color:#fff;border-radius:999px;padding:4px 10px;cursor:pointer;font-weight:800;font-size:12px;min-height:32px}
-  .empty{background:var(--card);border:1px dashed var(--line);border-radius:16px;padding:22px;text-align:center;color:var(--muted);display:none}
+  .card-body span{font-size:12px;color:var(--muted);display:block;margin-top:3px}
+  .play-row{margin-top:10px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800}
+  .play-ic{width:27px;height:27px;border-radius:50%;background:var(--red);display:grid;place-items:center;color:#fff;font-size:11px;flex-shrink:0}
+  .card.playing .play-row{color:var(--red2)}
+  .empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:24px;text-align:center;color:var(--muted);display:none}
   .empty.show{display:block}
-  /* GITHUB */
-  .github{margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
-  .github h2{margin:0 0 6px;font-size:19px}
-  .github p{color:var(--muted);line-height:1.6;font-size:14px;margin:0}
-  .steps{display:grid;gap:10px;margin-top:14px}
-  @media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
-  .step{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px}
-  .step b{font-size:22px;color:var(--red2)}
-  .step h3{margin:6px 0 4px;font-size:14px}
-  .step p{font-size:13px}
-  .step code{background:#000;color:#a5f3fc;padding:2px 5px;border-radius:6px;font-size:12px;word-break:break-all}
-  @media (prefers-color-scheme: light){.step code{background:#111827}}
-  .note{margin-top:12px;font-size:12.5px;color:var(--muted);line-height:1.6}
-  footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;line-height:1.7}
+  footer{margin-top:28px;padding-top:15px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;line-height:1.7}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="hero">
-    <div class="hero-top">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="tv-ic">📺</div>
       <div>
-        <h1>NONTON TV<br><span>INDONESIA</span> &amp;<br><em>LUAR NEGERI</em></h1>
-        <p>Channel Indonesia dan luar negeri dipisah jelas jadi dua grid. Indonesia sekarang lengkap: <b>TV nasional + TV lokal / daerah</b> — dari TVRI daerah, JTV, Bali TV, Bandung TV, Jogja TV sampai TV lokal Sumatera, Kalimantan, Sulawesi &amp; Papua. Untuk luar negeri, <b>fokus utamanya Asia</b> — Korea, Jepang, Singapura, Malaysia, Thailand, China, India &amp; lainnya tampil duluan. Klik <b>bendera negara</b> di menu Flag Grid buat lihat channel dari negara itu saja.</p>
-        <div class="stats">
-          <div class="stat"><span class="dot"></span> Live Streaming</div>
-          <div class="stat">▶ <b id="playCount">0</b>&nbsp;Channel Bisa Diputar di Sini</div>
-          <div class="stat"><b id="totalCount">36</b>&nbsp;Channel</div>
-          <div class="stat">🇮🇩 <b id="indoCount">20</b>&nbsp;Indonesia</div>
-          <div class="stat">🌏 <b id="worldCount">16</b>&nbsp;Luar Negeri — Fokus Asia</div>
-          <div class="stat">🇰🇷 Korea • 🇯🇵 Jepang • 🇸🇬 🇲🇾 🇹🇭 🇨🇳 🇮🇳 + lainnya</div>
-        </div>
+        <b>TV Streaming</b>
+        <span>Nonton TV langsung dari browser — tanpa aplikasi</span>
       </div>
     </div>
-  </header>
+    <div class="live-count"><span class="dot"></span> <span id="liveCount">27 channel live</span></div>
+  </div>
 
-  <!-- PLAYER -->
+  <!-- PLAYER — langsung muter saat halaman dibuka -->
   <section class="player-shell" id="playerShell">
-    <div class="player-head">
+    <div class="video-wrap">
+      <video id="video" controls playsinline autoplay muted></video>
+      <div class="buffering" id="buffering"><div><div class="spinner"></div><div style="margin-top:10px">Memuat siaran… biasanya ±15 detik</div></div></div>
+      <div class="player-msg" id="playerMsg"></div>
+    </div>
+    <div class="nowbar">
       <div class="now">
         <div class="now-logo" id="nowLogo" style="background:linear-gradient(135deg,#005baa,#e70011)">TVRI</div>
         <div style="min-width:0">
           <b id="nowName">TVRI Nasional</b>
-          <span id="nowMeta">Indonesia • Umum • Klik channel di bawah untuk ganti</span>
+          <span id="nowMeta">Indonesia • Umum</span>
         </div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <span class="live-badge"><i></i> LIVE</span>
-        <div class="player-actions">
-          <a class="btn" id="officialBtn" href="https://www.tvri.co.id" target="_blank" rel="noopener">Situs Resmi ↗</a>
-          <button class="btn primary" id="reloadBtn">↻ Muat Ulang</button>
-        </div>
+      </div>
+      <div class="player-actions">
+        <button class="btn" id="muteBtn">🔊 Nyalakan Suara</button>
+        <button class="btn primary" id="reloadBtn">↻ Muat Ulang</button>
       </div>
     </div>
-    <div class="video-wrap">
-      <video id="video" controls playsinline poster="" ></video>
-      <div class="player-msg" id="playerMsg"></div>
-    </div>
-    <div class="player-foot">Ini streaming TV beneran: channel yang bisa diputar di sini memakai <b>stream HLS langsung dari server / CDN resmi stasiunnya</b> — stream yang sama dengan yang dipakai player di web resmi mereka (tvri.go.id, metrotvnews.com, dw.com, dll). <b>Tidak ada YouTube sama sekali di halaman ini.</b> Klik kartu channel = langsung muter di player ini. Kalau lagi macet, coba <b>Muat Ulang</b> atau ganti channel. Channel yang belum punya stream web resmi yang terbuka tetap disediakan sebagai info + tombol <b>Situs Resmi</b>.</div>
   </section>
 
-  <!-- CONTROLS -->
+  <!-- PILIH CHANNEL -->
   <div class="controls">
-    <input class="search" id="search" type="search" placeholder="🔎  Cari channel / daerah / negara… contoh: RCTI, JTV, Bandung, Bali TV, Jogja, KBS, NHK, Korea"/>
+    <input class="search" id="search" type="search" placeholder="Cari channel… contoh: Metro, TVRI Bali, Arirang, berita"/>
     <div class="pills" id="pills">
       <button class="pill active" data-filter="all">Semua</button>
-      <button class="pill indo" data-filter="indo">🇮🇩 Indonesia</button>
-      <button class="pill world" data-filter="world">🌍 Luar Negeri</button>
-      <button class="pill" data-filter="Lokal">📍 Lokal / Daerah</button>
+      <button class="pill" data-filter="indo">🇮🇩 Indonesia</button>
+      <button class="pill" data-filter="world">🌍 Luar Negeri</button>
       <button class="pill" data-filter="Berita">Berita</button>
-      <button class="pill" data-filter="Hiburan">Hiburan</button>
       <button class="pill" data-filter="Umum">Umum</button>
-      <button class="pill" data-filter="Anak">Anak &amp; Keluarga</button>
+      <button class="pill" data-filter="Lokal">TV Daerah</button>
     </div>
   </div>
 
-  <!-- INDONESIA -->
-  <section class="section" id="section-indo">
-    <div class="section-head">
-      <div>
-        <h2><span class="flag indo"><span>ID • INDONESIA</span></span> TV Indonesia — Nasional</h2>
-        <p>Stasiun nasional: berita, hiburan, dan umum — grid khusus TV nasional Indonesia.</p>
-      </div>
-      <span class="count" id="count-indo"></span>
-    </div>
-    <div class="grid" id="grid-indo"></div>
-  </section>
-
-  <!-- TV LOKAL / DAERAH INDONESIA -->
-  <section class="section" id="section-lokal">
-    <div class="section-head">
-      <div>
-        <h2>📍 TV Lokal &amp; Daerah Indonesia</h2>
-        <p>TV-TV lokal dari berbagai provinsi &amp; kota — <b>Jawa Barat (termasuk Bandung, dekat Majalengka), Jakarta, Jawa Tengah, Yogyakarta, Jawa Timur, Bali</b>, plus Sumatera, Kalimantan, Sulawesi, dan Papua. Ada TVRI stasiun daerah &amp; TV swasta lokal.</p>
-      </div>
-      <span class="count" id="count-lokal"></span>
-    </div>
-    <div class="grid" id="grid-lokal"></div>
-  </section>
-
-  <!-- LUAR NEGERI -->
-  <section class="section" id="section-world">
-    <div class="section-head">
-      <div>
-        <h2><span class="flag world">INTL • WORLD</span> TV Luar Negeri — Fokus Asia 🌏</h2>
-        <p>Diutamakan <b>Korea, Jepang &amp; negara-negara Asia lainnya</b> — tampil paling atas. Di bawahnya baru channel Eropa, Amerika &amp; Timur Tengah. Klik bendera buat filter per negara.</p>
-      </div>
-      <span class="count" id="count-world"></span>
-    </div>
-
-    <!-- FLAG GRID -->
-    <div class="flag-wrap" id="flagWrap">
-      <div class="flag-wrap-head">
-        <b>🏳️ Pilih Negara — Flag Grid</b>
-        <span>Klik 1 bendera = tampilkan channel negara itu saja • Asia di urutan paling depan</span>
-      </div>
-      <div class="flag-grid" id="flagGrid"></div>
-    </div>
-    <div class="selected-line" id="selectedLine"></div>
-
-    <div class="grid" id="grid-world"></div>
-  </section>
-
-  <div class="empty" id="empty">Channel nggak ketemu. Coba kata kunci lain, atau reset filter ke “Semua”.</div>
-
-  <!-- GITHUB PAGES -->
-  <section class="github">
-    <h2>🚀 Mau di-upload ke GitHub Pages?</h2>
-    <p>Halaman ini memang disiapkan sebagai <b>1 file <code>index.html</code></b> — jadi gampang banget dipindah ke GitHub Pages. Nanti tinggal upload file ini saja, situsnya langsung online gratis.</p>
-    <div class="steps">
-      <div class="step"><b>1</b><h3>Buat Repo Baru</h3><p>Di GitHub → New repository, misal namanya <code>tv-streaming</code> → Public → Create.</p></div>
-      <div class="step"><b>2</b><h3>Upload index.html</h3><p>Add file → Upload files → pilih file <code>index.html</code> ini → Commit changes.</p></div>
-      <div class="step"><b>3</b><h3>Aktifkan Pages</h3><p>Settings → Pages → Source: <code>Deploy from a branch</code> → Branch <code>main / (root)</code> → Save. Tunggu 1–2 menit, link <code>username.github.io/tv-streaming</code> jadi.</p></div>
-    </div>
-    <p class="note">Catatan: Player memakai stream HLS langsung dari server / CDN resmi masing-masing stasiun — stream yang sama dengan player di web resminya. Tidak ada embed YouTube di halaman ini. Hak siar tetap milik stasiun TV-nya — kalau ada channel yang keberatan, cukup hapus channel itu dari daftar.</p>
-  </section>
+  <div class="list-head">
+    <h2>Pilih Channel</h2>
+    <span id="shownCount"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">Channel nggak ketemu. Coba kata kunci lain.</div>
 
   <footer>
-    Dibuat untuk Dedi Rohadi • Indonesia dipisah sendiri: nasional + lokal/daerah (Jabar, Jakarta, Jateng, DIY, Jatim, Bali, Sumatera, Kalimantan, Sulawesi, Papua), luar negeri fokus Asia (Korea &amp; Jepang duluan) dengan Flag Grid per negara • Player: HLS.js dengan stream langsung dari server resmi tiap stasiun (tanpa YouTube) — mendukung Chrome, Edge, Firefox &amp; Safari.<br>
-    Logo ditampilkan sebagai <i>wordmark</i> bergaya warna khas tiap stasiun agar ringan &amp; cepat dimuat di GitHub Pages.
+    Semua channel di atas diputar langsung di player ini memakai stream resmi dari server / CDN masing-masing stasiun TV.<br>
+    Channel besar seperti RCTI, SCTV, Kompas TV, tvOne, Trans TV, Trans7, ANTV, dan NET./MDTV belum muncul karena stasiunnya tidak menyediakan stream web terbuka yang bisa diputar di luar situs / aplikasi resminya — sudah dicek ulang, termasuk stream CNN Indonesia &amp; Trans TV di server detik.com yang playlist-nya ternyata rusak (varian 404).
   </footer>
 </div>
 
 <script>
+// HANYA channel yang stream-nya terbukti bisa diputar (rantai playlist → varian → segmen + CORS lolos).
 const CHANNELS = [
-  // ============ INDONESIA ============
-  {id:'tvri', name:'TVRI Nasional', sub:'TVRI', cat:'Umum', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#e70011)', logo:'TVRI', official:'https://www.tvri.co.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8', desc:'TV publik nasional — stream langsung dari server resmi TVRI (tvri.go.id)'},
-  {id:'rcti', name:'RCTI', sub:'RCTI+', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#ed1c24,#7a0c10)', logo:'RCTI', official:'https://www.rctiplus.com', stream:'', desc:'Sinetron, bola & hiburan'},
-  {id:'sctv', name:'SCTV', sub:'SCTV', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#00a651,#0057a8,#ed1c24)', logo:'SCTV', official:'https://www.sctv.co.id', stream:'', desc:'Sinetron & FTV'},
-  {id:'indosiar', name:'Indosiar', sub:'INDOSIAR', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7b1fa2,#e91e63)', logo:'INDOSIAR', official:'https://www.indosiar.com', stream:'', desc:'Dangdut & sinetron'},
-  {id:'mnctv', name:'MNCTV', sub:'MNCTV', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#f59e0b,#dc2626)', logo:'MNCTV', official:'https://www.mnctv.com', stream:'', desc:'Hiburan keluarga'},
-  {id:'gtv', name:'GTV', sub:'GTV', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#374151)', logo:'GTV', official:'https://www.gtv.id', stream:'', desc:'Film & animasi'},
-  {id:'antv', name:'ANTV', sub:'ANTV', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#c21807,#ff6b00)', logo:'ANTV', official:'https://www.antvklik.com', stream:'', desc:'Serial India & hiburan'},
-  {id:'transtv', name:'Trans TV', sub:'TRANS TV', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0ea5e9,#1e3a8a)', logo:'TRANS TV', official:'https://www.transtv.co.id', stream:'', desc:'Film & variety show'},
-  {id:'trans7', name:'Trans7', sub:'TRANS 7', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#dc2626,#991b1b)', logo:'TRANS7', official:'https://www.trans7.co.id', stream:'', desc:'MotoGP, berita & hiburan'},
-  {id:'metrotv', name:'Metro TV', sub:'METRO TV', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0b2a5b,#2563eb)', logo:'METRO TV', official:'https://www.metrotvnews.com', stream:'https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8', desc:'Berita 24 jam — stream langsung dari server resmi Metro TV (metrotvnews.com)'},
-  {id:'tvone', name:'tvOne', sub:'tvONE', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#b91c1c,#111827)', logo:'tvOne', official:'https://www.tvonenews.com', stream:'', desc:'Berita & olahraga — web resminya tidak menyediakan stream yang bisa diputar di sini, nonton via Situs Resmi'},
-  {id:'kompastv', name:'Kompas TV', sub:'KOMPAS TV', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#00a19a)', logo:'KOMPAS TV', official:'https://www.kompas.tv', stream:'', desc:'Berita & talkshow — web resminya tidak menyediakan stream yang bisa diputar di sini, nonton via Situs Resmi'},
-  {id:'cnnid', name:'CNN Indonesia', sub:'CNN ID', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#cc0000)', logo:'CNN', logoSub:'INDONESIA', official:'https://www.cnnindonesia.com/tv', stream:'', desc:'Berita nasional 24 jam — stream web resminya tidak bisa diputar di sini (playlist variannya gagal dimuat), nonton via Situs Resmi'},
-  {id:'cnbcid', name:'CNBC Indonesia', sub:'CNBC ID', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0f2a44,#7c3aed)', logo:'CNBC', logoSub:'INDONESIA', official:'https://www.cnbcindonesia.com/tv', stream:'https://video.detik.com/livecnbc/smil:cnbctv/playlist.m3u8', desc:'Bisnis & ekonomi — stream langsung dari server resmi CNBC Indonesia'},
-  {id:'inews', name:'iNews', sub:'iNEWS', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#dc2626,#7f1d1d)', logo:'iNews', official:'https://www.inews.id', stream:'', desc:'Berita MNC Group'},
-  {id:'rtv', name:'RTV', sub:'RTV', cat:'Anak', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#f59e0b,#ef4444)', logo:'RTV', official:'https://www.rtv.co.id', stream:'', desc:'Animasi & keluarga'},
-  {id:'moji', name:'MOJI', sub:'MOJI', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#06b6d4,#0e7490)', logo:'MOJI', official:'https://www.moji.id', stream:'', desc:'Olahraga & anak muda'},
-  {id:'mentari', name:'Mentari TV', sub:'MENTARI', cat:'Anak', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#f97316,#facc15)', logo:'MENTARI TV', official:'https://www.mentaritv.com', stream:'', desc:'Anak & keluarga'},
-  {id:'mdtv', name:'MDTV (NET.)', sub:'MDTV', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#6d28d9)', logo:'MDTV', official:'https://www.netmedia.co.id', stream:'', desc:'Dulu NET TV'},
-  {id:'beritasatu', name:'BeritaSatu', sub:'BERITASATU', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7f1d1d,#dc2626)', logo:'BERITA SATU', official:'https://www.beritasatu.com', stream:'', desc:'Berita & bisnis'},
-
-  // ============ TV LOKAL / DAERAH INDONESIA ============
-  // --- JAWA BARAT ---
-  {id:'tvrijabar', name:'TVRI Jawa Barat', sub:'TVRI JABAR', cat:'Lokal', lokal:true, daerah:'Jawa Barat • Bandung', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#0284c7)', logo:'TVRI', logoSub:'JAWA BARAT', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Jabar/hls/Jabar.m3u8', desc:'TVRI daerah Jawa Barat — Bandung & sekitarnya'},
-  {id:'bandungtv', name:'Bandung TV', sub:'BANDUNG TV', cat:'Lokal', lokal:true, daerah:'Jawa Barat • Bandung', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0ea5e9,#1e3a8a)', logo:'BANDUNG TV', official:'https://www.bandungtv.co.id', stream:'', desc:'TV lokal pertama di Bandung, Jawa Barat'},
-  {id:'inspiratv', name:'Inspira TV', sub:'INSPIRA TV', cat:'Lokal', lokal:true, daerah:'Jawa Barat • Bandung', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7c3aed,#db2777)', logo:'INSPIRA TV', official:'https://inspira.tv', stream:'', desc:'TV lokal Bandung — dakwah & inspirasi'},
-  {id:'ijntv', name:'IJN TV / MQTV', sub:'MQTV', cat:'Lokal', lokal:true, daerah:'Jawa Barat • Bandung', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#059669,#065f46)', logo:'MQTV', official:'https://www.mqtv.co.id', stream:'https://5bf7b725107e5.streamlock.net/mqtv/mqtv/playlist.m3u8', desc:'TV lokal Bandung — religi & keluarga'},
-  // --- DKI JAKARTA ---
-  {id:'jaktv', name:'Jak TV', sub:'JAK TV', cat:'Lokal', lokal:true, daerah:'DKI Jakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#f59e0b)', logo:'jak tv', official:'https://www.jaktv.co.id', stream:'', desc:'TV lokal Jakarta — berita ibu kota'},
-  {id:'elshintatv', name:'Elshinta TV', sub:'ELSHINTA TV', cat:'Lokal', lokal:true, daerah:'DKI Jakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#dc2626,#991b1b)', logo:'ELSHINTA TV', official:'https://www.elshinta.com', stream:'', desc:'TV lokal Jakarta — berita & lalu lintas'},
-  {id:'daaitv', name:'DAAI TV Indonesia', sub:'DAAI TV', cat:'Lokal', lokal:true, daerah:'DKI Jakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0891b2,#155e75)', logo:'DAAI TV', official:'https://www.daaitv.co.id', stream:'https://pull.daaiplus.com/live-DAAIPLUS/live-DAAIPLUS_HD.m3u8', desc:'TV lokal Jakarta — kemanusiaan & budaya'},
-  // --- JAWA TENGAH & YOGYAKARTA ---
-  {id:'tvrijateng', name:'TVRI Jawa Tengah', sub:'TVRI JATENG', cat:'Lokal', lokal:true, daerah:'Jawa Tengah • Semarang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#0ea5e9)', logo:'TVRI', logoSub:'JAWA TENGAH', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Jateng/hls/Jateng.m3u8', desc:'TVRI daerah Jawa Tengah — Semarang'},
-  {id:'semarangtv', name:'Semarang TV', sub:'SEMARANG TV', cat:'Lokal', lokal:true, daerah:'Jawa Tengah • Semarang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#b45309,#92400e)', logo:'SEMARANG TV', official:'https://www.semarangtv.co.id', stream:'', desc:'TV lokal Semarang & Jawa Tengah'},
-  {id:'jogjatv', name:'Jogja TV', sub:'JOGJA TV', cat:'Lokal', lokal:true, daerah:'DI Yogyakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7c2d12,#dc2626)', logo:'JOGJA TV', official:'https://www.jogjatv.tv', stream:'', desc:'TV lokal Yogyakarta — budaya Jawa'},
-  {id:'aditv', name:'ADiTV', sub:'ADITV', cat:'Lokal', lokal:true, daerah:'DI Yogyakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#065f46,#059669)', logo:'ADiTV', official:'https://aditv.co.id', stream:'', desc:'TV lokal Yogyakarta — Islam & budaya'},
-  {id:'rbtvjogja', name:'RBTV', sub:'RBTV', cat:'Lokal', lokal:true, daerah:'DI Yogyakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#1d4ed8,#111827)', logo:'RBTV', official:'https://www.rbtv.co.id', stream:'', desc:'TV lokal Yogyakarta (Retjo Buntung)'},
-  // --- JAWA TIMUR ---
-  {id:'tvrijatim', name:'TVRI Jawa Timur', sub:'TVRI JATIM', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Surabaya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#dc2626)', logo:'TVRI', logoSub:'JAWA TIMUR', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Jatim/hls/Jatim.m3u8', desc:'TVRI daerah Jawa Timur — Surabaya'},
-  {id:'jtv', name:'JTV', sub:'JTV', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Surabaya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#dc2626,#7f1d1d)', logo:'JTV', logoSub:'REK!', official:'https://www.jtv.co.id', stream:'', desc:'TV lokal terbesar Jawa Timur — Surabaya, bahasa Jawa'},
-  {id:'sbotv', name:'SBO TV', sub:'SBO TV', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Surabaya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0f766e,#134e4a)', logo:'SBO TV', official:'https://www.sbotv.co.id', stream:'', desc:'TV lokal Surabaya — berita & hiburan'},
-  {id:'tv9nusantara', name:'TV9 Nusantara', sub:'TV9', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Surabaya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#15803d,#14532d)', logo:'TV9', logoSub:'NUSANTARA', official:'https://tv9.co.id', stream:'https://5bf7b725107e5.streamlock.net/tv9/tv9/playlist.m3u8', desc:'TV lokal Surabaya — religi NU & budaya'},
-  {id:'malangtv', name:'Malang TV', sub:'MALANG TV', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Malang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#2563eb,#7c3aed)', logo:'MALANG TV', official:'https://www.malangtv.co.id', stream:'', desc:'TV lokal Malang Raya'},
-  // --- BALI & NUSA TENGGARA ---
-  {id:'tvribali', name:'TVRI Bali', sub:'TVRI BALI', cat:'Lokal', lokal:true, daerah:'Bali • Denpasar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#f59e0b)', logo:'TVRI', logoSub:'BALI', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Bali/hls/Bali.m3u8', desc:'TVRI daerah Bali — Denpasar'},
-  {id:'balitv', name:'Bali TV', sub:'BALI TV', cat:'Lokal', lokal:true, daerah:'Bali • Denpasar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#b45309,#78350f)', logo:'BALI TV', official:'https://www.balitv.tv', stream:'', desc:'TV lokal Bali — budaya & pariwisata Bali'},
-  {id:'kompastvdewata', name:'Bali TV / Dewata', sub:'DEWATA TV', cat:'Lokal', lokal:true, daerah:'Bali • Denpasar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0ea5e9,#065f46)', logo:'DEWATA TV', official:'https://www.balitv.tv', stream:'', desc:'Channel lokal Bali — berita Dewata'},
-  // --- SUMATERA ---
-  {id:'tvriaceh', name:'TVRI Aceh', sub:'TVRI ACEH', cat:'Lokal', lokal:true, daerah:'Aceh • Banda Aceh', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#15803d)', logo:'TVRI', logoSub:'ACEH', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Aceh/hls/Aceh.m3u8', desc:'TVRI daerah Aceh — Banda Aceh'},
-  {id:'tvrisumut', name:'TVRI Sumatera Utara', sub:'TVRI SUMUT', cat:'Lokal', lokal:true, daerah:'Sumatera Utara • Medan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#b45309)', logo:'TVRI', logoSub:'SUMATERA UTARA', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Sumut/hls/Sumut.m3u8', desc:'TVRI daerah Sumut — Medan'},
-  {id:'deltvmedan', name:'Deli TV', sub:'DELI TV', cat:'Lokal', lokal:true, daerah:'Sumatera Utara • Medan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#dc2626,#111827)', logo:'DELI TV', official:'https://www.tvri.go.id', stream:'', desc:'TV lokal Medan, Sumatera Utara'},
-  {id:'riautelevisi', name:'Riau Televisi (Rtv)', sub:'RIAU TV', cat:'Lokal', lokal:true, daerah:'Riau • Pekanbaru', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#f59e0b,#92400e)', logo:'RIAU TV', official:'https://riautelevisi.com', stream:'', desc:'TV lokal Riau — Pekanbaru'},
-  {id:'batamtv', name:'Batam TV', sub:'BATAM TV', cat:'Lokal', lokal:true, daerah:'Kep. Riau • Batam', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0369a1,#0c4a6e)', logo:'BATAM TV', official:'https://www.batamtvnews.com', stream:'', desc:'TV lokal Batam, Kepulauan Riau'},
-  {id:'padangtv', name:'Padang TV', sub:'PADANG TV', cat:'Lokal', lokal:true, daerah:'Sumatera Barat • Padang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#991b1b,#111827)', logo:'PADANG TV', official:'https://www.padangtv.id', stream:'', desc:'TV lokal Padang, Sumatera Barat'},
-  {id:'tvrisumsel', name:'TVRI Sumatera Selatan', sub:'TVRI SUMSEL', cat:'Lokal', lokal:true, daerah:'Sumatera Selatan • Palembang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#dc2626)', logo:'TVRI', logoSub:'SUMATERA SELATAN', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Sumsel/hls/Sumsel.m3u8', desc:'TVRI daerah Sumsel — Palembang'},
-  {id:'palembangtv', name:'Palembang TV (Paltv)', sub:'PALTV', cat:'Lokal', lokal:true, daerah:'Sumatera Selatan • Palembang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7c3aed,#312e81)', logo:'PALTV', official:'https://www.paltv.co.id', stream:'', desc:'TV lokal Palembang, Sumatera Selatan'},
-  // --- KALIMANTAN ---
-  {id:'tvrikaltim', name:'TVRI Kalimantan Timur', sub:'TVRI KALTIM', cat:'Lokal', lokal:true, daerah:'Kaltim • Samarinda', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#059669)', logo:'TVRI', logoSub:'KALIMANTAN TIMUR', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Kaltim/hls/Kaltim.m3u8', desc:'TVRI daerah Kaltim — Samarinda & IKN'},
-  {id:'dutatv', name:'Duta TV', sub:'DUTA TV', cat:'Lokal', lokal:true, daerah:'Kalsel • Banjarmasin', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#2563eb,#1e3a8a)', logo:'DUTA TV', official:'https://dutatv.com', stream:'https://dutatv.siar.us/dutatv/live/playlist.m3u8', desc:'TV lokal Banjarmasin, Kalimantan Selatan'},
-  {id:'banjartv', name:'Banjar TV', sub:'BANJAR TV', cat:'Lokal', lokal:true, daerah:'Kalsel • Banjarmasin', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#059669,#064e3b)', logo:'BANJAR TV', official:'https://www.banjartv.co.id', stream:'https://banjartv.siar.us/banjartv/live/playlist.m3u8', desc:'TV lokal Banjar — budaya Banjar'},
-  {id:'ruaitv', name:'Ruai TV', sub:'RUAI TV', cat:'Lokal', lokal:true, daerah:'Kalbar • Pontianak', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#b91c1c,#78350f)', logo:'RUAI TV', official:'https://ruaitv.co.id', stream:'', desc:'TV lokal Pontianak, Kalimantan Barat'},
-  {id:'tvrikalteng', name:'TVRI Kalimantan Tengah', sub:'TVRI KALTENG', cat:'Lokal', lokal:true, daerah:'Kalteng • Palangka Raya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#b45309)', logo:'TVRI', logoSub:'KALIMANTAN TENGAH', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Kalteng/hls/Kalteng.m3u8', desc:'TVRI daerah Kalteng — Palangka Raya'},
-  // --- SULAWESI & PAPUA ---
-  {id:'tvrisulsel', name:'TVRI Sulawesi Selatan', sub:'TVRI SULSEL', cat:'Lokal', lokal:true, daerah:'Sulsel • Makassar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#dc2626)', logo:'TVRI', logoSub:'SULAWESI SELATAN', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Sulsel/hls/Sulsel.m3u8', desc:'TVRI daerah Sulsel — Makassar'},
-  {id:'fajartv', name:'Fajar TV', sub:'FAJAR TV', cat:'Lokal', lokal:true, daerah:'Sulsel • Makassar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0ea5e9,#1e40af)', logo:'FAJAR TV', official:'https://fajar.co.id', stream:'', desc:'TV lokal Makassar, Sulawesi Selatan'},
-  {id:'tvrisulut', name:'TVRI Sulawesi Utara', sub:'TVRI SULUT', cat:'Lokal', lokal:true, daerah:'Sulut • Manado', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#0ea5e9)', logo:'TVRI', logoSub:'SULAWESI UTARA', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Sulut/hls/Sulut.m3u8', desc:'TVRI daerah Sulut — Manado'},
-  {id:'tvripapua', name:'TVRI Papua', sub:'TVRI PAPUA', cat:'Lokal', lokal:true, daerah:'Papua • Jayapura', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#f59e0b)', logo:'TVRI', logoSub:'PAPUA', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/Papua/hls/Papua.m3u8', desc:'TVRI daerah Papua — Jayapura'},
-  {id:'tvriworld', name:'TVRI World', sub:'TVRI WORLD', cat:'Lokal', lokal:true, daerah:'Nasional • Bahasa Inggris', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#005baa)', logo:'TVRI WORLD', official:'https://www.tvri.go.id', stream:'https://ott-balancer.tvri.go.id/live/eds/TVRIWorld/hls/TVRIWorld.m3u8', desc:'Channel TVRI berbahasa Inggris untuk dunia'},
-
-  // ============ LUAR NEGERI — FOKUS ASIA (KOREA, JEPANG & ASIA LAINNYA DULUAN) ============
-  // --- KOREA SELATAN ---
-  {id:'kbsworld', name:'KBS World', sub:'KBS WORLD', cat:'Hiburan', region:'world', country:'Korea Selatan', flag:'🇰🇷', asia:true, color:'linear-gradient(135deg,#1e40af,#0ea5e9)', logo:'KBS WORLD', official:'https://world.kbs.co.kr', stream:'', desc:'Drama Korea, K-pop & variety — tidak ada stream web terbuka, nonton via Situs Resmi'},
-  {id:'arirang', name:'Arirang TV', sub:'ARIRANG', cat:'Umum', region:'world', country:'Korea Selatan', flag:'🇰🇷', asia:true, color:'linear-gradient(135deg,#0ea5e9,#1d4ed8)', logo:'arirang', official:'https://www.arirang.com', stream:'https://amdlive-ch01-ctnd-com.akamaized.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8', desc:'Berita & budaya Korea (Inggris)'},
-  {id:'mbc', name:'MBC TV', sub:'MBC', cat:'Hiburan', region:'world', country:'Korea Selatan', flag:'🇰🇷', asia:true, color:'linear-gradient(135deg,#111827,#7c3aed)', logo:'MBC', official:'https://www.imbc.com', stream:'', desc:'Drama & hiburan Korea'},
-  {id:'sbs', name:'SBS TV', sub:'SBS', cat:'Hiburan', region:'world', country:'Korea Selatan', flag:'🇰🇷', asia:true, color:'linear-gradient(135deg,#0066b3,#00a651)', logo:'SBS', official:'https://www.sbs.co.kr', stream:'', desc:'Drama, Running Man & hiburan'},
-  {id:'ebs', name:'EBS 1TV', sub:'EBS', cat:'Umum', region:'world', country:'Korea Selatan', flag:'🇰🇷', asia:true, color:'linear-gradient(135deg,#f59e0b,#dc2626)', logo:'EBS', official:'https://www.ebs.co.kr', stream:'', desc:'Pendidikan & anak Korea'},
-  {id:'tvnkr', name:'tvN', sub:'tvN', cat:'Hiburan', region:'world', country:'Korea Selatan', flag:'🇰🇷', asia:true, color:'linear-gradient(135deg,#e60023,#111827)', logo:'tvN', official:'https://www.tving.com', stream:'', desc:'Drama Korea populer'},
-  // --- JEPANG ---
-  {id:'nhk', name:'NHK World Japan', sub:'NHK WORLD', cat:'Berita', region:'world', country:'Jepang', flag:'🇯🇵', asia:true, color:'linear-gradient(135deg,#111827,#dc2626)', logo:'NHK WORLD', logoSub:'JAPAN', official:'https://www3.nhk.or.jp/nhkworld/en/live/', stream:'', desc:'Berita & budaya Jepang — stream web resminya tidak terbuka untuk diputar di sini, nonton via Situs Resmi'},
-  {id:'fujitv', name:'Fuji TV', sub:'FUJI TV', cat:'Hiburan', region:'world', country:'Jepang', flag:'🇯🇵', asia:true, color:'linear-gradient(135deg,#0ea5e9,#1e3a8a)', logo:'FUJI TV', official:'https://www.fujitv.co.jp', stream:'', desc:'Drama & anime Jepang'},
-  {id:'tvasahi', name:'TV Asahi', sub:'TV ASAHI', cat:'Hiburan', region:'world', country:'Jepang', flag:'🇯🇵', asia:true, color:'linear-gradient(135deg,#dc2626,#f59e0b)', logo:'TV ASAHI', official:'https://www.tv-asahi.co.jp', stream:'', desc:'Doraemon, anime & drama'},
-  {id:'tbsjp', name:'TBS Japan', sub:'TBS', cat:'Hiburan', region:'world', country:'Jepang', flag:'🇯🇵', asia:true, color:'linear-gradient(135deg,#1d4ed8,#111827)', logo:'TBS', official:'https://www.tbs.co.jp', stream:'', desc:'Drama & berita Jepang'},
-  {id:'ntvjp', name:'Nippon TV (NTV)', sub:'NTV', cat:'Hiburan', region:'world', country:'Jepang', flag:'🇯🇵', asia:true, color:'linear-gradient(135deg,#facc15,#b45309)', logo:'日テレ NTV', official:'https://www.ntv.co.jp', stream:'', desc:'Hiburan & berita Jepang'},
-  // --- SINGAPURA ---
-  {id:'cna', name:'CNA', sub:'CNA', cat:'Berita', region:'world', country:'Singapura', flag:'🇸🇬', asia:true, color:'linear-gradient(135deg,#c8102e,#7f1d1d)', logo:'CNA', official:'https://www.channelnewsasia.com/watch', stream:'https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index.m3u8', desc:'Berita Asia dari Singapura'},
-  {id:'ch5sg', name:'Channel 5', sub:'CHANNEL 5', cat:'Hiburan', region:'world', country:'Singapura', flag:'🇸🇬', asia:true, color:'linear-gradient(135deg,#7c3aed,#111827)', logo:'CHANNEL 5', official:'https://www.mewatch.sg', stream:'', desc:'Hiburan Inggris — Mediacorp'},
-  {id:'ch8sg', name:'Channel 8', sub:'CHANNEL 8', cat:'Hiburan', region:'world', country:'Singapura', flag:'🇸🇬', asia:true, color:'linear-gradient(135deg,#dc2626,#991b1b)', logo:'CHANNEL 8', logoSub:'8频道', official:'https://www.mewatch.sg', stream:'', desc:'Drama Mandarin — Mediacorp'},
-  {id:'suria', name:'Suria', sub:'SURIA', cat:'Hiburan', region:'world', country:'Singapura', flag:'🇸🇬', asia:true, color:'linear-gradient(135deg,#059669,#064e3b)', logo:'SURIA', official:'https://www.mewatch.sg', stream:'', desc:'Hiburan Melayu — Mediacorp'},
-  // --- MALAYSIA ---
-  {id:'rtmtv1', name:'TV1 RTM', sub:'TV1', cat:'Umum', region:'world', country:'Malaysia', flag:'🇲🇾', asia:true, color:'linear-gradient(135deg,#1d4ed8,#facc15)', logo:'TV1', official:'https://rtmklik.rtm.gov.my', stream:'', desc:'TV nasional Malaysia'},
-  {id:'rtmtv2', name:'TV2 RTM', sub:'TV2', cat:'Hiburan', region:'world', country:'Malaysia', flag:'🇲🇾', asia:true, color:'linear-gradient(135deg,#dc2626,#1d4ed8)', logo:'TV2', official:'https://rtmklik.rtm.gov.my', stream:'', desc:'Hiburan Malaysia'},
-  {id:'beritartm', name:'Berita RTM', sub:'BERITA RTM', cat:'Berita', region:'world', country:'Malaysia', flag:'🇲🇾', asia:true, color:'linear-gradient(135deg,#0f2a44,#2563eb)', logo:'BERITA RTM', official:'https://rtmklik.rtm.gov.my', stream:'', desc:'Berita Malaysia 24 jam'},
-  {id:'astroawani', name:'Astro Awani', sub:'AWANI', cat:'Berita', region:'world', country:'Malaysia', flag:'🇲🇾', asia:true, color:'linear-gradient(135deg,#111827,#dc2626)', logo:'astro AWANI', official:'https://www.astroawani.com', stream:'', desc:'Berita Malaysia'},
-  {id:'tv3my', name:'TV3 Malaysia', sub:'TV3', cat:'Hiburan', region:'world', country:'Malaysia', flag:'🇲🇾', asia:true, color:'linear-gradient(135deg,#f59e0b,#7c2d12)', logo:'TV3', official:'https://www.tv3.com.my', stream:'', desc:'Drama & hiburan Malaysia'},
-  // --- THAILAND ---
-  {id:'thaipbs', name:'Thai PBS', sub:'Thai PBS', cat:'Umum', region:'world', country:'Thailand', flag:'🇹🇭', asia:true, color:'linear-gradient(135deg,#f97316,#7c2d12)', logo:'Thai PBS', official:'https://www.thaipbs.or.th', stream:'', desc:'TV publik Thailand'},
-  {id:'ch3th', name:'Channel 3 HD', sub:'CH3', cat:'Hiburan', region:'world', country:'Thailand', flag:'🇹🇭', asia:true, color:'linear-gradient(135deg,#0ea5e9,#dc2626)', logo:'CH3 HD', official:'https://www.ch3plus.com', stream:'', desc:'Lakorn / drama Thailand'},
-  {id:'gmm25', name:'GMM 25', sub:'GMM25', cat:'Hiburan', region:'world', country:'Thailand', flag:'🇹🇭', asia:true, color:'linear-gradient(135deg,#22c55e,#14532d)', logo:'GMM 25', official:'https://www.gmm25.com', stream:'', desc:'Series & hiburan Thailand'},
-  // --- CHINA & HONG KONG & TAIWAN ---
-  {id:'cgtn', name:'CGTN', sub:'CGTN', cat:'Berita', region:'world', country:'China', flag:'🇨🇳', asia:true, color:'linear-gradient(135deg,#b91c1c,#1e3a8a)', logo:'CGTN', official:'https://www.cgtn.com', stream:'https://amg00405-rakutentv-cgtn-rakuten-i9tar.amagi.tv/master.m3u8', desc:'Berita China (Inggris) — stream distribusi resmi CGTN'},
-  {id:'cctv4', name:'CCTV-4', sub:'CCTV-4', cat:'Umum', region:'world', country:'China', flag:'🇨🇳', asia:true, color:'linear-gradient(135deg,#991b1b,#111827)', logo:'CCTV-4', logoSub:'中文国际', official:'https://tv.cctv.com', stream:'', desc:'Channel internasional China'},
-  {id:'taiwanplus', name:'TaiwanPlus', sub:'TAIWAN+', cat:'Berita', region:'world', country:'Taiwan', flag:'🇹🇼', asia:true, color:'linear-gradient(135deg,#111827,#0ea5e9)', logo:'TaiwanPlus', official:'https://www.taiwanplus.com', stream:'', desc:'Berita Taiwan (Inggris)'},
-  {id:'rthk', name:'RTHK TV 31', sub:'RTHK', cat:'Umum', region:'world', country:'Hong Kong', flag:'🇭🇰', asia:true, color:'linear-gradient(135deg,#7c3aed,#312e81)', logo:'RTHK 31', official:'https://www.rthk.hk/tv', stream:'', desc:'TV publik Hong Kong'},
-  {id:'tvbnews', name:'TVB News', sub:'TVB NEWS', cat:'Berita', region:'world', country:'Hong Kong', flag:'🇭🇰', asia:true, color:'linear-gradient(135deg,#059669,#1d4ed8,#dc2626)', logo:'TVB NEWS', official:'https://www.tvb.com', stream:'', desc:'Berita Hong Kong'},
-  // --- INDIA ---
-  {id:'wion', name:'WION', sub:'WION', cat:'Berita', region:'world', country:'India', flag:'🇮🇳', asia:true, color:'linear-gradient(135deg,#111827,#f59e0b)', logo:'WION', official:'https://www.wionews.com', stream:'', desc:'Berita dunia dari India'},
-  {id:'ndtv', name:'NDTV 24x7', sub:'NDTV', cat:'Berita', region:'world', country:'India', flag:'🇮🇳', asia:true, color:'linear-gradient(135deg,#dc2626,#111827)', logo:'NDTV 24x7', official:'https://www.ndtv.com', stream:'', desc:'Berita India (Inggris)'},
-  {id:'ddnews', name:'DD News', sub:'DD NEWS', cat:'Berita', region:'world', country:'India', flag:'🇮🇳', asia:true, color:'linear-gradient(135deg,#f97316,#15803d)', logo:'DD NEWS', official:'https://ddnews.gov.in', stream:'', desc:'TV berita nasional India'},
-  // --- FILIPINA & VIETNAM ---
-  {id:'gma', name:'GMA Network', sub:'GMA', cat:'Hiburan', region:'world', country:'Filipina', flag:'🇵🇭', asia:true, color:'linear-gradient(135deg,#dc2626,#facc15,#2563eb)', logo:'GMA', official:'https://www.gmanetwork.com', stream:'', desc:'Drama & hiburan Filipina'},
-  {id:'anc', name:'ANC (ABS-CBN News)', sub:'ANC', cat:'Berita', region:'world', country:'Filipina', flag:'🇵🇭', asia:true, color:'linear-gradient(135deg,#111827,#dc2626)', logo:'ANC', official:'https://news.abs-cbn.com/anc', stream:'', desc:'Berita Filipina 24 jam'},
-  {id:'vtv1', name:'VTV1', sub:'VTV1', cat:'Umum', region:'world', country:'Vietnam', flag:'🇻🇳', asia:true, color:'linear-gradient(135deg,#dc2626,#facc15)', logo:'VTV1', official:'https://vtv.vn', stream:'', desc:'TV nasional Vietnam'},
-  {id:'vtv3', name:'VTV3', sub:'VTV3', cat:'Hiburan', region:'world', country:'Vietnam', flag:'🇻🇳', asia:true, color:'linear-gradient(135deg,#0ea5e9,#dc2626)', logo:'VTV3', official:'https://vtv.vn', stream:'', desc:'Hiburan Vietnam'},
-  // ============ LUAR NEGERI — EROPA / AMERIKA / TIMUR TENGAH ============
-  {id:'aljazeera', name:'Al Jazeera English', sub:'AL JAZEERA', cat:'Berita', region:'world', country:'Qatar', flag:'🇶🇦', color:'linear-gradient(135deg,#fa9005,#b45309)', logo:'AL JAZEERA', official:'https://www.aljazeera.com/live', stream:'', desc:'Berita dunia 24 jam — stream web resminya tidak terbuka untuk diputar di sini, nonton via Situs Resmi'},
-  {id:'bbc', name:'BBC News', sub:'BBC NEWS', cat:'Berita', region:'world', country:'Inggris', color:'linear-gradient(135deg,#b80000,#7f1d1d)', logo:'BBC NEWS', official:'https://www.bbc.com/news', stream:'', desc:'Berita Inggris & dunia — tidak ada stream web terbuka, nonton via Situs Resmi'},
-  {id:'cnnintl', name:'CNN International', sub:'CNN', cat:'Berita', region:'world', country:'Amerika Serikat', color:'linear-gradient(135deg,#111827,#cc0000)', logo:'CNN', official:'https://edition.cnn.com', stream:'', desc:'Berita AS & dunia'},
-  {id:'dw', name:'DW English', sub:'DW', cat:'Berita', region:'world', country:'Jerman', color:'linear-gradient(135deg,#0090d4,#003a70)', logo:'DW', logoSub:'ENGLISH', official:'https://www.dw.com/en/live-tv/s-100817', stream:'https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8', desc:'Berita Eropa — stream langsung dari server resmi DW'},
-  {id:'france24', name:'France 24 English', sub:'FRANCE 24', cat:'Berita', region:'world', country:'Prancis', color:'linear-gradient(135deg,#0055a4,#002654)', logo:'FRANCE 24', official:'https://www.france24.com/en/live', stream:'', desc:'Berita Prancis & dunia — stream web resminya tidak terbuka untuk diputar di sini, nonton via Situs Resmi'},
-  {id:'euronews', name:'Euronews English', sub:'EURONEWS', cat:'Berita', region:'world', country:'Eropa', color:'linear-gradient(135deg,#0f4c81,#38bdf8)', logo:'euronews.', official:'https://www.euronews.com/live', stream:'', desc:'Berita Eropa — stream web resminya tidak terbuka untuk diputar di sini, nonton via Situs Resmi'},
-  {id:'skynews', name:'Sky News', sub:'SKY NEWS', cat:'Berita', region:'world', country:'Inggris', color:'linear-gradient(135deg,#7f1d1d,#2563eb)', logo:'sky news', official:'https://news.sky.com/watch-live', stream:'', desc:'Berita Inggris — tidak ada stream web terbuka, nonton via Situs Resmi'},
-  {id:'abcnews', name:'ABC News Live', sub:'ABC NEWS', cat:'Berita', region:'world', country:'Amerika Serikat', color:'linear-gradient(135deg,#111827,#000)', logo:'abc NEWS', official:'https://abcnews.go.com/Live', stream:'', desc:'Berita AS 24 jam — tidak ada stream web terbuka, nonton via Situs Resmi'},
-  {id:'bloomberg', name:'Bloomberg TV', sub:'BLOOMBERG', cat:'Berita', region:'world', country:'Amerika Serikat', color:'linear-gradient(135deg,#2800d7,#111827)', logo:'Bloomberg', official:'https://www.bloomberg.com/live', stream:'https://www.bloomberg.com/media-manifest/streams/us.m3u8', desc:'Bisnis & pasar global'},
-  {id:'trtworld', name:'TRT World', sub:'TRT WORLD', cat:'Berita', region:'world', country:'Turki', color:'linear-gradient(135deg,#00a0af,#164e63)', logo:'TRT WORLD', official:'https://www.trtworld.com/live', stream:'https://tv-trtworld.medya.trt.com.tr/master.m3u8', desc:'Berita dari Turki'},
-  {id:'rt', name:'RT News', sub:'RT', cat:'Berita', region:'world', country:'Rusia', color:'linear-gradient(135deg,#76b900,#365314)', logo:'RT', official:'https://www.rt.com/on-air', stream:'', desc:'Berita Rusia (Inggris)'},
+  // INDONESIA — NASIONAL
+  {id:'tvri', name:'TVRI Nasional', cat:'Umum', region:'indo', area:'Indonesia', color:'linear-gradient(135deg,#005baa,#e70011)', logo:'TVRI', stream:'https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8'},
+  {id:'metrotv', name:'Metro TV', cat:'Berita', region:'indo', area:'Indonesia', color:'linear-gradient(135deg,#0b2a5b,#2563eb)', logo:'METRO TV', stream:'https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8'},
+  {id:'cnbcid', name:'CNBC Indonesia', cat:'Berita', region:'indo', area:'Indonesia', color:'linear-gradient(135deg,#0f2a44,#7c3aed)', logo:'CNBC', logoSub:'INDONESIA', stream:'https://video.detik.com/livecnbc/smil:cnbctv/playlist.m3u8'},
+  // INDONESIA — DAERAH / LOKAL
+  {id:'tvrijabar', name:'TVRI Jawa Barat', cat:'Lokal', region:'indo', area:'Bandung • Jawa Barat', color:'linear-gradient(135deg,#005baa,#0284c7)', logo:'TVRI', logoSub:'JAWA BARAT', stream:'https://ott-balancer.tvri.go.id/live/eds/Jabar/hls/Jabar.m3u8'},
+  {id:'mqtv', name:'MQTV', cat:'Lokal', region:'indo', area:'Bandung • Jawa Barat', color:'linear-gradient(135deg,#059669,#065f46)', logo:'MQTV', stream:'https://5bf7b725107e5.streamlock.net/mqtv/mqtv/playlist.m3u8'},
+  {id:'daaitv', name:'DAAI TV', cat:'Lokal', region:'indo', area:'Jakarta', color:'linear-gradient(135deg,#0891b2,#155e75)', logo:'DAAI TV', stream:'https://pull.daaiplus.com/live-DAAIPLUS/live-DAAIPLUS_HD.m3u8'},
+  {id:'tvrijateng', name:'TVRI Jawa Tengah', cat:'Lokal', region:'indo', area:'Semarang • Jawa Tengah', color:'linear-gradient(135deg,#005baa,#0ea5e9)', logo:'TVRI', logoSub:'JAWA TENGAH', stream:'https://ott-balancer.tvri.go.id/live/eds/Jateng/hls/Jateng.m3u8'},
+  {id:'tvrijatim', name:'TVRI Jawa Timur', cat:'Lokal', region:'indo', area:'Surabaya • Jawa Timur', color:'linear-gradient(135deg,#005baa,#dc2626)', logo:'TVRI', logoSub:'JAWA TIMUR', stream:'https://ott-balancer.tvri.go.id/live/eds/Jatim/hls/Jatim.m3u8'},
+  {id:'tv9', name:'TV9 Nusantara', cat:'Lokal', region:'indo', area:'Surabaya • Jawa Timur', color:'linear-gradient(135deg,#15803d,#14532d)', logo:'TV9', logoSub:'NUSANTARA', stream:'https://5bf7b725107e5.streamlock.net/tv9/tv9/playlist.m3u8'},
+  {id:'tvribali', name:'TVRI Bali', cat:'Lokal', region:'indo', area:'Denpasar • Bali', color:'linear-gradient(135deg,#005baa,#f59e0b)', logo:'TVRI', logoSub:'BALI', stream:'https://ott-balancer.tvri.go.id/live/eds/Bali/hls/Bali.m3u8'},
+  {id:'tvriaceh', name:'TVRI Aceh', cat:'Lokal', region:'indo', area:'Banda Aceh', color:'linear-gradient(135deg,#005baa,#15803d)', logo:'TVRI', logoSub:'ACEH', stream:'https://ott-balancer.tvri.go.id/live/eds/Aceh/hls/Aceh.m3u8'},
+  {id:'tvrisumut', name:'TVRI Sumatera Utara', cat:'Lokal', region:'indo', area:'Medan • Sumut', color:'linear-gradient(135deg,#005baa,#b45309)', logo:'TVRI', logoSub:'SUMATERA UTARA', stream:'https://ott-balancer.tvri.go.id/live/eds/Sumut/hls/Sumut.m3u8'},
+  {id:'tvrisumsel', name:'TVRI Sumatera Selatan', cat:'Lokal', region:'indo', area:'Palembang • Sumsel', color:'linear-gradient(135deg,#005baa,#dc2626)', logo:'TVRI', logoSub:'SUMATERA SELATAN', stream:'https://ott-balancer.tvri.go.id/live/eds/Sumsel/hls/Sumsel.m3u8'},
+  {id:'tvrikaltim', name:'TVRI Kalimantan Timur', cat:'Lokal', region:'indo', area:'Samarinda • Kaltim', color:'linear-gradient(135deg,#005baa,#059669)', logo:'TVRI', logoSub:'KALIMANTAN TIMUR', stream:'https://ott-balancer.tvri.go.id/live/eds/Kaltim/hls/Kaltim.m3u8'},
+  {id:'dutatv', name:'Duta TV', cat:'Lokal', region:'indo', area:'Banjarmasin • Kalsel', color:'linear-gradient(135deg,#2563eb,#1e3a8a)', logo:'DUTA TV', stream:'https://dutatv.siar.us/dutatv/live/playlist.m3u8'},
+  {id:'banjartv', name:'Banjar TV', cat:'Lokal', region:'indo', area:'Banjarmasin • Kalsel', color:'linear-gradient(135deg,#059669,#064e3b)', logo:'BANJAR TV', stream:'https://banjartv.siar.us/banjartv/live/playlist.m3u8'},
+  {id:'tvrikalteng', name:'TVRI Kalimantan Tengah', cat:'Lokal', region:'indo', area:'Palangka Raya • Kalteng', color:'linear-gradient(135deg,#005baa,#b45309)', logo:'TVRI', logoSub:'KALIMANTAN TENGAH', stream:'https://ott-balancer.tvri.go.id/live/eds/Kalteng/hls/Kalteng.m3u8'},
+  {id:'tvrisulsel', name:'TVRI Sulawesi Selatan', cat:'Lokal', region:'indo', area:'Makassar • Sulsel', color:'linear-gradient(135deg,#005baa,#dc2626)', logo:'TVRI', logoSub:'SULAWESI SELATAN', stream:'https://ott-balancer.tvri.go.id/live/eds/Sulsel/hls/Sulsel.m3u8'},
+  {id:'tvrisulut', name:'TVRI Sulawesi Utara', cat:'Lokal', region:'indo', area:'Manado • Sulut', color:'linear-gradient(135deg,#005baa,#0ea5e9)', logo:'TVRI', logoSub:'SULAWESI UTARA', stream:'https://ott-balancer.tvri.go.id/live/eds/Sulut/hls/Sulut.m3u8'},
+  {id:'tvripapua', name:'TVRI Papua', cat:'Lokal', region:'indo', area:'Jayapura • Papua', color:'linear-gradient(135deg,#005baa,#f59e0b)', logo:'TVRI', logoSub:'PAPUA', stream:'https://ott-balancer.tvri.go.id/live/eds/Papua/hls/Papua.m3u8'},
+  {id:'tvriworld', name:'TVRI World', cat:'Umum', region:'indo', area:'Indonesia • Inggris', color:'linear-gradient(135deg,#111827,#005baa)', logo:'TVRI WORLD', stream:'https://ott-balancer.tvri.go.id/live/eds/TVRIWorld/hls/TVRIWorld.m3u8'},
+  // LUAR NEGERI
+  {id:'arirang', name:'Arirang TV', cat:'Umum', region:'world', area:'Korea Selatan', color:'linear-gradient(135deg,#0ea5e9,#1d4ed8)', logo:'arirang', stream:'https://amdlive-ch01-ctnd-com.akamaized.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8'},
+  {id:'cna', name:'CNA', cat:'Berita', region:'world', area:'Singapura', color:'linear-gradient(135deg,#c8102e,#7f1d1d)', logo:'CNA', stream:'https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index.m3u8'},
+  {id:'cgtn', name:'CGTN', cat:'Berita', region:'world', area:'China', color:'linear-gradient(135deg,#b91c1c,#1e3a8a)', logo:'CGTN', stream:'https://amg00405-rakutentv-cgtn-rakuten-i9tar.amagi.tv/master.m3u8'},
+  {id:'dw', name:'DW English', cat:'Berita', region:'world', area:'Jerman', color:'linear-gradient(135deg,#0090d4,#003a70)', logo:'DW', logoSub:'ENGLISH', stream:'https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8'},
+  {id:'bloomberg', name:'Bloomberg TV', cat:'Berita', region:'world', area:'Amerika Serikat', color:'linear-gradient(135deg,#2800d7,#111827)', logo:'Bloomberg', stream:'https://www.bloomberg.com/media-manifest/streams/us.m3u8'},
+  {id:'trtworld', name:'TRT World', cat:'Berita', region:'world', area:'Turki', color:'linear-gradient(135deg,#00a0af,#164e63)', logo:'TRT WORLD', stream:'https://tv-trtworld.medya.trt.com.tr/master.m3u8'},
 ];
 
-const COUNTRY_FLAGS={'Korea Selatan':'🇰🇷','Jepang':'🇯🇵','Singapura':'🇸🇬','Malaysia':'🇲🇾','Thailand':'🇹🇭','China':'🇨🇳','Taiwan':'🇹🇼','Hong Kong':'🇭🇰','India':'🇮🇳','Filipina':'🇵🇭','Vietnam':'🇻🇳','Qatar':'🇶🇦','Inggris':'🇬🇧','Amerika Serikat':'🇺🇸','Jerman':'🇩🇪','Prancis':'🇫🇷','Eropa':'🇪🇺','Turki':'🇹🇷','Rusia':'🇷🇺'};
-const COUNTRY_ORDER=['Korea Selatan','Jepang','Singapura','Malaysia','Thailand','China','Taiwan','Hong Kong','India','Filipina','Vietnam','Qatar','Inggris','Amerika Serikat','Jerman','Prancis','Eropa','Turki','Rusia'];
-const ASIA_COUNTRIES=['Korea Selatan','Jepang','Singapura','Malaysia','Thailand','China','Taiwan','Hong Kong','India','Filipina','Vietnam'];
-let hls=null, current=null, activeFilter='all', query='', activeCountry='all';
-function renderFlagGrid(){
-  const counts={}; CHANNELS.filter(c=>c.region==='world').forEach(c=>{counts[c.country]=(counts[c.country]||0)+1});
-  const totalWorld=CHANNELS.filter(c=>c.region==='world').length;
-  let html=`<button class="flag-btn ${activeCountry==='all'?'active':''}" data-country="all"><span class="f">🌏</span><span class="n">Semua Negara</span><span class="c">${totalWorld} channel • Asia duluan</span></button>`;
-  COUNTRY_ORDER.forEach(ct=>{
-    if(!counts[ct]) return;
-    const isAsia=ASIA_COUNTRIES.includes(ct);
-    html+=`<button class="flag-btn ${isAsia?'asia':''} ${activeCountry===ct?'active':''}" data-country="${ct}"><span class="f">${COUNTRY_FLAGS[ct]||'🏳️'}</span><span class="n">${ct}${isAsia?' ⭐':''}</span><span class="c">${counts[ct]} channel</span></button>`;
-  });
-  document.getElementById('flagGrid').innerHTML=html;
-}
-window.setCountry=function(ct){
-  activeCountry=ct;
-  renderFlagGrid(); render();
-  document.getElementById('section-world').scrollIntoView({behavior:'smooth',block:'start'});
-};
 const video=document.getElementById('video');
 const msg=document.getElementById('playerMsg');
+const buffering=document.getElementById('buffering');
+let hls=null, current=null, activeFilter='all', query='';
 
 function showMsg(t){ msg.textContent=t; msg.classList.add('show'); }
 function hideMsg(){ msg.classList.remove('show'); }
+function setBuffering(on){ buffering.classList.toggle('show', !!on); }
 
-function playChannel(ch){
+video.addEventListener('waiting', ()=>setBuffering(true));
+video.addEventListener('playing', ()=>{ setBuffering(false); hideMsg(); });
+video.addEventListener('canplay', ()=>setBuffering(false));
+
+function playChannel(ch, scroll){
   current=ch;
   document.querySelectorAll('.card').forEach(c=>c.classList.toggle('playing', c.dataset.id===ch.id));
   document.getElementById('nowName').textContent=ch.name;
-  document.getElementById('nowMeta').textContent=(ch.region==='indo'?'Indonesia':'Luar Negeri • '+ch.country)+' • '+ch.cat+' • '+ch.desc;
+  document.getElementById('nowMeta').textContent=(ch.region==='indo'?'🇮🇩 ':'🌍 ')+ch.area+' • '+(ch.cat==='Lokal'?'TV Daerah':ch.cat);
   const nl=document.getElementById('nowLogo');
   nl.textContent=ch.logo; nl.style.background=ch.color;
-  document.getElementById('officialBtn').href=ch.official;
-  hideMsg();
-  document.getElementById('playerShell').scrollIntoView({behavior:'smooth', block:'start'});
+  hideMsg(); setBuffering(true);
+  if(scroll) document.getElementById('playerShell').scrollIntoView({behavior:'smooth', block:'start'});
 
   if(hls){ hls.destroy(); hls=null; }
   video.removeAttribute('src'); video.load();
-  video.style.display='block';
 
-  if(!ch.stream){
-    showMsg('Channel ini belum punya stream web resmi yang bisa diputar langsung di halaman ini — web resminya tidak menyediakan stream HLS terbuka. Klik “Situs Resmi ↗” di atas buat nonton live di situs / aplikasi resminya.');
-    return;
-  }
   if(window.Hls && Hls.isSupported()){
     hls=new Hls({enableWorker:true});
     hls.loadSource(ch.stream);
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ video.play().catch(()=>{}); });
     hls.on(Hls.Events.ERROR, (e,d)=>{
-      if(d && d.fatal){ showMsg('Stream '+ch.name+' lagi nggak bisa diputar dari servernya (offline / diblokir wilayah / CORS). Coba Muat Ulang atau buka Situs Resmi-nya.'); }
+      if(d && d.fatal){ setBuffering(false); showMsg('Stream '+ch.name+' lagi nggak bisa diputar dari servernya. Coba tombol Muat Ulang, atau pilih channel lain.'); }
     });
   } else if(video.canPlayType('application/vnd.apple.mpegurl')){
     video.src=ch.stream;
     video.addEventListener('loadedmetadata', ()=>video.play().catch(()=>{}), {once:true});
-    video.addEventListener('error', ()=>showMsg('Stream gagal dimuat. Coba Muat Ulang atau Situs Resmi.'), {once:true});
+    video.addEventListener('error', ()=>{ setBuffering(false); showMsg('Stream gagal dimuat. Coba Muat Ulang.'); }, {once:true});
   } else {
-    showMsg('Browser ini nggak mendukung HLS. Coba Chrome / Edge / Safari terbaru.');
+    setBuffering(false);
+    showMsg('Browser ini nggak mendukung streaming HLS. Coba Chrome / Edge / Safari terbaru.');
   }
 }
+window.playById=function(id){ const ch=CHANNELS.find(c=>c.id===id); if(ch) playChannel(ch, true); };
 
-document.getElementById('reloadBtn').addEventListener('click', ()=>{ if(current) playChannel(current); });
+document.getElementById('reloadBtn').addEventListener('click', ()=>{ if(current) playChannel(current, false); });
+const muteBtn=document.getElementById('muteBtn');
+function syncMuteBtn(){ muteBtn.textContent = video.muted ? '🔊 Nyalakan Suara' : '🔇 Matikan Suara'; }
+muteBtn.addEventListener('click', ()=>{ video.muted=!video.muted; if(!video.muted) video.play().catch(()=>{}); syncMuteBtn(); });
+video.addEventListener('volumechange', syncMuteBtn);
 
 function cardHTML(ch){
   return `<button class="card" data-id="${ch.id}" onclick="playById('${ch.id}')">
     <div class="logo-box" style="background:${ch.color}">
       <div><div class="logo-text">${ch.logo}</div>${ch.logoSub?`<div class="logo-sub">${ch.logoSub}</div>`:''}</div>
-      <span class="live-mini"><i></i>LIVE</span>
+      <span class="onair"><i></i>LIVE</span>
     </div>
     <div class="card-body">
-      <b>${ch.name}</b><span>${ch.desc}</span>
-      <div class="tags"><span class="tag">${ch.region==='indo'?'🇮🇩 Indonesia':(COUNTRY_FLAGS[ch.country]||'🌍')+' '+ch.country}</span>${ch.daerah?`<span class="tag">📍 ${ch.daerah}</span>`:''}<span class="tag">${ch.cat}</span>${ch.stream?'<span class="tag">▶ Bisa Play di Sini</span>':'<span class="tag">↗ Live di Situs Resmi</span>'}</div>
-      <div class="play-row"><span class="play-ic">▶</span> ${ch.stream?'Nonton di Player':'Buka di Player'}</div>
+      <b>${ch.name}</b>
+      <span>${ch.region==='indo'?'🇮🇩':'🌍'} ${ch.area} • ${ch.cat==='Lokal'?'TV Daerah':ch.cat}</span>
+      <div class="play-row"><span class="play-ic">▶</span> Nonton Sekarang</div>
     </div>
   </button>`;
 }
-window.playById=function(id){ const ch=CHANNELS.find(c=>c.id===id); if(!ch) return; playChannel(ch); };
 
 function render(){
   const q=query.trim().toLowerCase();
-  const match=(ch)=>{
+  const list=CHANNELS.filter(ch=>{
     const inFilter = activeFilter==='all' || ch.region===activeFilter || ch.cat===activeFilter;
-    const inQuery = !q || (ch.name+' '+ch.cat+' '+ch.country+' '+(ch.daerah||'')+' '+ch.desc).toLowerCase().includes(q);
-    const inCountry = ch.region!=='world' || activeCountry==='all' || ch.country===activeCountry;
-    return inFilter && inQuery && inCountry;
-  };
-  const indo=CHANNELS.filter(c=>c.region==='indo' && !c.lokal && match(c));
-  const lokal=CHANNELS.filter(c=>c.lokal && match(c));
-  const world=CHANNELS.filter(c=>c.region==='world' && match(c));
-  document.getElementById('grid-indo').innerHTML=indo.map(cardHTML).join('');
-  const lokalEl=document.getElementById('grid-lokal'); if(lokalEl) lokalEl.innerHTML=lokal.map(cardHTML).join('');
-  document.getElementById('grid-world').innerHTML=world.map(cardHTML).join('');
-  document.getElementById('count-indo').textContent=indo.length+' channel nasional';
-  const cl=document.getElementById('count-lokal'); if(cl) cl.textContent=lokal.length+' channel lokal';
-  document.getElementById('count-world').textContent=world.length+' channel';
-  // Kalau lagi filter 1 negara asing, fokus ke grid luar negeri aja
-  const focusingCountry = activeCountry!=='all';
-  document.getElementById('section-indo').style.display=(!focusingCountry && indo.length)?'':'none';
-  const slokal=document.getElementById('section-lokal'); if(slokal) slokal.style.display=(!focusingCountry && lokal.length)?'':'none';
-  document.getElementById('section-world').style.display=(world.length || focusingCountry)?'':'none';
-  const sl=document.getElementById('selectedLine');
-  if(focusingCountry){
-    sl.innerHTML=`<span>Menampilkan: <b>${COUNTRY_FLAGS[activeCountry]||''} ${activeCountry}</b> — ${world.length} channel</span> <button onclick="setCountry('all')">✕ Lihat Semua Negara</button>`;
-    sl.classList.add('show');
-  } else { sl.classList.remove('show'); sl.innerHTML=''; }
-  document.getElementById('empty').classList.toggle('show', indo.length+lokal.length+world.length===0 && !focusingCountry || (focusingCountry && world.length===0));
+    const inQuery = !q || (ch.name+' '+ch.cat+' '+ch.area).toLowerCase().includes(q);
+    return inFilter && inQuery;
+  });
+  document.getElementById('grid').innerHTML=list.map(cardHTML).join('');
+  document.getElementById('shownCount').textContent=list.length+' channel';
+  document.getElementById('empty').classList.toggle('show', list.length===0);
   if(current) document.querySelectorAll('.card').forEach(c=>c.classList.toggle('playing', c.dataset.id===current.id));
 }
-document.getElementById('flagGrid').addEventListener('click', e=>{
-  const b=e.target.closest('.flag-btn'); if(!b) return;
-  activeCountry=b.dataset.country;
-  renderFlagGrid(); render();
-  if(activeCountry!=='all') document.getElementById('flagWrap').scrollIntoView({behavior:'smooth',block:'start'});
-});
 
 document.getElementById('search').addEventListener('input', e=>{ query=e.target.value; render(); });
 document.getElementById('pills').addEventListener('click', e=>{
   const b=e.target.closest('.pill'); if(!b) return;
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
-  b.classList.add('active'); activeFilter=b.dataset.filter;
-  if(b.dataset.filter==='indo'){ activeCountry='all'; renderFlagGrid(); }
-  render();
+  b.classList.add('active'); activeFilter=b.dataset.filter; render();
 });
 
-document.getElementById('playCount').textContent=CHANNELS.filter(c=>c.stream).length;
-document.getElementById('totalCount').textContent=CHANNELS.length;
-document.getElementById('indoCount').textContent=CHANNELS.filter(c=>c.region==='indo').length;
-document.getElementById('worldCount').textContent=CHANNELS.filter(c=>c.region==='world').length;
-renderFlagGrid();
+document.getElementById('liveCount').textContent=CHANNELS.length+' channel live';
 render();
-// Auto-play channel pertama yang bisa diputar (HLS resmi terverifikasi), tanpa suara dulu biar nggak kaget
-playChannel(CHANNELS.find(c=>c.stream) || CHANNELS[0]);
-video.muted=true;
+syncMuteBtn();
+// Langsung muter saat halaman dibuka (bisu dulu sesuai aturan browser, suara tinggal klik tombol 🔊)
+playChannel(CHANNELS[0], false);
 </script>
 </body>
 </html>
