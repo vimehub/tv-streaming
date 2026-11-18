@@ -151,16 +151,16 @@
   <section class="player-shell" id="playerShell">
     <div class="player-head">
       <div class="now">
-        <div class="now-logo" id="nowLogo" style="background:#e70011">TVRI</div>
+        <div class="now-logo" id="nowLogo" style="background:linear-gradient(135deg,#0ea5e9,#1d4ed8)">arirang</div>
         <div style="min-width:0">
-          <b id="nowName">TVRI Nasional</b>
-          <span id="nowMeta">Indonesia • Umum • Klik channel di bawah untuk ganti</span>
+          <b id="nowName">Arirang TV</b>
+          <span id="nowMeta">Luar Negeri • Korea Selatan • Umum • Klik channel di bawah untuk ganti</span>
         </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <span class="live-badge"><i></i> LIVE</span>
         <div class="player-actions">
-          <a class="btn" id="officialBtn" href="https://www.tvri.co.id" target="_blank" rel="noopener">Situs Resmi ↗</a>
+          <a class="btn" id="officialBtn" href="https://www.arirang.com" target="_blank" rel="noopener">Situs Resmi ↗</a>
           <button class="btn primary" id="reloadBtn">↻ Muat Ulang</button>
         </div>
       </div>
@@ -170,7 +170,7 @@
       <iframe id="ytPlayer" title="Live YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
       <div class="player-msg" id="playerMsg"></div>
     </div>
-    <div class="player-foot">Channel yang bisa diputar di sini sekarang memakai <b>embed live resmi YouTube</b> atau <b>stream HLS resmi</b> stasiunnya — jauh lebih stabil, nggak ke-block CORS lagi. Klik kartu channel = langsung muter di player ini. Kalau lagi macet, coba <b>Muat Ulang</b> atau ganti channel.</div>
+    <div class="player-foot">Channel yang bisa diputar di sini sekarang memakai <b>embed live resmi YouTube</b> atau <b>stream HLS resmi</b> stasiunnya — jauh lebih stabil, nggak ke-block CORS lagi. Klik kartu channel = langsung muter di player ini. Kalau lagi macet, coba <b>Muat Ulang</b> atau ganti channel.<br><b>Catatan jujur soal live YouTube:</b> live YouTube itu per siaran, bukan selalu 24 jam — kalau siarannya berakhir atau di-restart pemilik channel, embed-nya bisa tiba-tiba mati dan tampil “Video ini tidak tersedia”, meski sebelumnya jalan. Itu yang terjadi pada <b>TVRI Nasional</b>: live terakhirnya sudah berakhir dan embed rekamannya pun gagal, jadi TVRI sekarang hanya bisa ditonton lewat <b>Situs Resmi</b>.</div>
   </section>
 
   <!-- CONTROLS -->
@@ -258,7 +258,7 @@
 <script>
 const CHANNELS = [
   // ============ INDONESIA ============
-  {id:'tvri', name:'TVRI Nasional', sub:'TVRI', cat:'Umum', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#e70011)', logo:'TVRI', official:'https://www.tvri.co.id', stream:'', yt:'UCyIMsCzDRm8_y_6wM26_PWQ', desc:'TV publik nasional'},
+  {id:'tvri', name:'TVRI Nasional', sub:'TVRI', cat:'Umum', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#e70011)', logo:'TVRI', official:'https://www.tvri.co.id', stream:'', desc:'TV publik nasional — live YouTube-nya per program, bukan 24 jam; kalau siarannya berakhir embed jadi tidak tersedia, nonton via Situs Resmi'},
   {id:'rcti', name:'RCTI', sub:'RCTI+', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#ed1c24,#7a0c10)', logo:'RCTI', official:'https://www.rctiplus.com', stream:'', desc:'Sinetron, bola & hiburan'},
   {id:'sctv', name:'SCTV', sub:'SCTV', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#00a651,#0057a8,#ed1c24)', logo:'SCTV', official:'https://www.sctv.co.id', stream:'', desc:'Sinetron & FTV'},
   {id:'indosiar', name:'Indosiar', sub:'INDOSIAR', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7b1fa2,#e91e63)', logo:'INDOSIAR', official:'https://www.indosiar.com', stream:'', desc:'Dangdut & sinetron'},
@@ -440,7 +440,7 @@ function playChannel(ch){
     return;
   }
   if(!ch.stream){
-    showMsg('Channel ini belum punya embed live yang bisa diputar langsung di halaman ini. Klik “Situs Resmi ↗” di atas buat nonton live di situs / aplikasi resminya.');
+    showMsg('Channel ini belum punya embed live yang bisa diputar langsung di halaman ini. Khusus channel live YouTube: siarannya per program dan bisa berakhir sewaktu-waktu — kalau live-nya selesai, embed-nya ikut mati dan tampil “Video ini tidak tersedia”. Klik “Situs Resmi ↗” di atas buat nonton live di situs / aplikasi resminya.');
     return;
   }
   if(window.Hls && Hls.isSupported()){
@@ -528,8 +528,8 @@ document.getElementById('indoCount').textContent=CHANNELS.filter(c=>c.region==='
 document.getElementById('worldCount').textContent=CHANNELS.filter(c=>c.region==='world').length;
 renderFlagGrid();
 render();
-// Auto-play channel pertama yang punya live stabil (TVRI via YouTube), tanpa suara dulu biar nggak kaget
-playChannel(CHANNELS.find(c=>c.id==='tvri') || CHANNELS[0]);
+// Auto-play channel pertama yang masih bisa diputar (embed/HLS terverifikasi), tanpa suara dulu biar nggak kaget
+playChannel(CHANNELS.find(c=>c.ytv||c.yt||c.stream) || CHANNELS[0]);
 video.muted=true;
 </script>
 </body>
