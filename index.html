@@ -134,7 +134,7 @@
     <div class="hero-top">
       <div>
         <h1>NONTON TV<br><span>INDONESIA</span> &amp;<br><em>LUAR NEGERI</em></h1>
-        <p>Channel Indonesia dan luar negeri dipisah jelas jadi dua grid. Untuk luar negeri, <b>fokus utamanya Asia</b> — Korea, Jepang, Singapura, Malaysia, Thailand, China, India &amp; lainnya tampil duluan. Klik <b>bendera negara</b> di menu Flag Grid buat lihat channel dari negara itu saja.</p>
+        <p>Channel Indonesia dan luar negeri dipisah jelas jadi dua grid. Indonesia sekarang lengkap: <b>TV nasional + TV lokal / daerah</b> — dari TVRI daerah, JTV, Bali TV, Bandung TV, Jogja TV sampai TV lokal Sumatera, Kalimantan, Sulawesi &amp; Papua. Untuk luar negeri, <b>fokus utamanya Asia</b> — Korea, Jepang, Singapura, Malaysia, Thailand, China, India &amp; lainnya tampil duluan. Klik <b>bendera negara</b> di menu Flag Grid buat lihat channel dari negara itu saja.</p>
         <div class="stats">
           <div class="stat"><span class="dot"></span> Live Streaming</div>
           <div class="stat"><b id="totalCount">36</b>&nbsp;Channel</div>
@@ -173,11 +173,12 @@
 
   <!-- CONTROLS -->
   <div class="controls">
-    <input class="search" id="search" type="search" placeholder="🔎  Cari channel / negara… contoh: RCTI, KBS, NHK, Korea, Jepang, Malaysia, BBC"/>
+    <input class="search" id="search" type="search" placeholder="🔎  Cari channel / daerah / negara… contoh: RCTI, JTV, Bandung, Bali TV, Jogja, KBS, NHK, Korea"/>
     <div class="pills" id="pills">
       <button class="pill active" data-filter="all">Semua</button>
       <button class="pill indo" data-filter="indo">🇮🇩 Indonesia</button>
       <button class="pill world" data-filter="world">🌍 Luar Negeri</button>
+      <button class="pill" data-filter="Lokal">📍 Lokal / Daerah</button>
       <button class="pill" data-filter="Berita">Berita</button>
       <button class="pill" data-filter="Hiburan">Hiburan</button>
       <button class="pill" data-filter="Umum">Umum</button>
@@ -189,12 +190,24 @@
   <section class="section" id="section-indo">
     <div class="section-head">
       <div>
-        <h2><span class="flag indo"><span>ID • INDONESIA</span></span> TV Indonesia</h2>
-        <p>Stasiun nasional, berita, hiburan, dan daerah — semua dalam satu grid khusus Indonesia.</p>
+        <h2><span class="flag indo"><span>ID • INDONESIA</span></span> TV Indonesia — Nasional</h2>
+        <p>Stasiun nasional: berita, hiburan, dan umum — grid khusus TV nasional Indonesia.</p>
       </div>
       <span class="count" id="count-indo"></span>
     </div>
     <div class="grid" id="grid-indo"></div>
+  </section>
+
+  <!-- TV LOKAL / DAERAH INDONESIA -->
+  <section class="section" id="section-lokal">
+    <div class="section-head">
+      <div>
+        <h2>📍 TV Lokal &amp; Daerah Indonesia</h2>
+        <p>TV-TV lokal dari berbagai provinsi &amp; kota — <b>Jawa Barat (termasuk Bandung, dekat Majalengka), Jakarta, Jawa Tengah, Yogyakarta, Jawa Timur, Bali</b>, plus Sumatera, Kalimantan, Sulawesi, dan Papua. Ada TVRI stasiun daerah &amp; TV swasta lokal.</p>
+      </div>
+      <span class="count" id="count-lokal"></span>
+    </div>
+    <div class="grid" id="grid-lokal"></div>
   </section>
 
   <!-- LUAR NEGERI -->
@@ -235,7 +248,7 @@
   </section>
 
   <footer>
-    Dibuat untuk Dedi Rohadi • Indonesia dipisah sendiri, luar negeri fokus Asia (Korea &amp; Jepang duluan) dengan Flag Grid per negara • Player: HLS.js — mendukung Chrome, Edge, Firefox &amp; Safari.<br>
+    Dibuat untuk Dedi Rohadi • Indonesia dipisah sendiri: nasional + lokal/daerah (Jabar, Jakarta, Jateng, DIY, Jatim, Bali, Sumatera, Kalimantan, Sulawesi, Papua), luar negeri fokus Asia (Korea &amp; Jepang duluan) dengan Flag Grid per negara • Player: HLS.js — mendukung Chrome, Edge, Firefox &amp; Safari.<br>
     Logo ditampilkan sebagai <i>wordmark</i> bergaya warna khas tiap stasiun agar ringan &amp; cepat dimuat di GitHub Pages.
   </footer>
 </div>
@@ -263,6 +276,54 @@ const CHANNELS = [
   {id:'mentari', name:'Mentari TV', sub:'MENTARI', cat:'Anak', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#f97316,#facc15)', logo:'MENTARI TV', official:'https://www.mentaritv.com', stream:'', desc:'Anak & keluarga'},
   {id:'mdtv', name:'MDTV (NET.)', sub:'MDTV', cat:'Hiburan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#6d28d9)', logo:'MDTV', official:'https://www.netmedia.co.id', stream:'', desc:'Dulu NET TV'},
   {id:'beritasatu', name:'BeritaSatu', sub:'BERITASATU', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7f1d1d,#dc2626)', logo:'BERITA SATU', official:'https://www.beritasatu.com', stream:'', desc:'Berita & bisnis'},
+
+  // ============ TV LOKAL / DAERAH INDONESIA ============
+  // --- JAWA BARAT ---
+  {id:'tvrijabar', name:'TVRI Jawa Barat', sub:'TVRI JABAR', cat:'Lokal', lokal:true, daerah:'Jawa Barat • Bandung', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#0284c7)', logo:'TVRI', logoSub:'JAWA BARAT', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Jawa Barat — Bandung & sekitarnya'},
+  {id:'bandungtv', name:'Bandung TV', sub:'BANDUNG TV', cat:'Lokal', lokal:true, daerah:'Jawa Barat • Bandung', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0ea5e9,#1e3a8a)', logo:'BANDUNG TV', official:'https://www.bandungtv.co.id', stream:'', desc:'TV lokal pertama di Bandung, Jawa Barat'},
+  {id:'inspiratv', name:'Inspira TV', sub:'INSPIRA TV', cat:'Lokal', lokal:true, daerah:'Jawa Barat • Bandung', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7c3aed,#db2777)', logo:'INSPIRA TV', official:'https://inspira.tv', stream:'', desc:'TV lokal Bandung — dakwah & inspirasi'},
+  {id:'ijntv', name:'IJN TV / MQTV', sub:'MQTV', cat:'Lokal', lokal:true, daerah:'Jawa Barat • Bandung', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#059669,#065f46)', logo:'MQTV', official:'https://www.mqtv.co.id', stream:'', desc:'TV lokal Bandung — religi & keluarga'},
+  // --- DKI JAKARTA ---
+  {id:'jaktv', name:'Jak TV', sub:'JAK TV', cat:'Lokal', lokal:true, daerah:'DKI Jakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#f59e0b)', logo:'jak tv', official:'https://www.jaktv.co.id', stream:'', desc:'TV lokal Jakarta — berita ibu kota'},
+  {id:'elshintatv', name:'Elshinta TV', sub:'ELSHINTA TV', cat:'Lokal', lokal:true, daerah:'DKI Jakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#dc2626,#991b1b)', logo:'ELSHINTA TV', official:'https://www.elshinta.com', stream:'', desc:'TV lokal Jakarta — berita & lalu lintas'},
+  {id:'daaitv', name:'DAAI TV Indonesia', sub:'DAAI TV', cat:'Lokal', lokal:true, daerah:'DKI Jakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0891b2,#155e75)', logo:'DAAI TV', official:'https://www.daaitv.co.id', stream:'', desc:'TV lokal Jakarta — kemanusiaan & budaya'},
+  // --- JAWA TENGAH & YOGYAKARTA ---
+  {id:'tvrijateng', name:'TVRI Jawa Tengah', sub:'TVRI JATENG', cat:'Lokal', lokal:true, daerah:'Jawa Tengah • Semarang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#0ea5e9)', logo:'TVRI', logoSub:'JAWA TENGAH', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Jawa Tengah — Semarang'},
+  {id:'semarangtv', name:'Semarang TV', sub:'SEMARANG TV', cat:'Lokal', lokal:true, daerah:'Jawa Tengah • Semarang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#b45309,#92400e)', logo:'SEMARANG TV', official:'https://www.semarangtv.co.id', stream:'', desc:'TV lokal Semarang & Jawa Tengah'},
+  {id:'jogjatv', name:'Jogja TV', sub:'JOGJA TV', cat:'Lokal', lokal:true, daerah:'DI Yogyakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7c2d12,#dc2626)', logo:'JOGJA TV', official:'https://www.jogjatv.tv', stream:'', desc:'TV lokal Yogyakarta — budaya Jawa'},
+  {id:'aditv', name:'ADiTV', sub:'ADITV', cat:'Lokal', lokal:true, daerah:'DI Yogyakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#065f46,#059669)', logo:'ADiTV', official:'https://aditv.co.id', stream:'', desc:'TV lokal Yogyakarta — Islam & budaya'},
+  {id:'rbtvjogja', name:'RBTV', sub:'RBTV', cat:'Lokal', lokal:true, daerah:'DI Yogyakarta', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#1d4ed8,#111827)', logo:'RBTV', official:'https://www.rbtv.co.id', stream:'', desc:'TV lokal Yogyakarta (Retjo Buntung)'},
+  // --- JAWA TIMUR ---
+  {id:'tvrijatim', name:'TVRI Jawa Timur', sub:'TVRI JATIM', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Surabaya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#dc2626)', logo:'TVRI', logoSub:'JAWA TIMUR', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Jawa Timur — Surabaya'},
+  {id:'jtv', name:'JTV', sub:'JTV', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Surabaya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#dc2626,#7f1d1d)', logo:'JTV', logoSub:'REK!', official:'https://www.jtv.co.id', stream:'', desc:'TV lokal terbesar Jawa Timur — Surabaya, bahasa Jawa'},
+  {id:'sbotv', name:'SBO TV', sub:'SBO TV', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Surabaya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0f766e,#134e4a)', logo:'SBO TV', official:'https://www.sbotv.co.id', stream:'', desc:'TV lokal Surabaya — berita & hiburan'},
+  {id:'tv9nusantara', name:'TV9 Nusantara', sub:'TV9', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Surabaya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#15803d,#14532d)', logo:'TV9', logoSub:'NUSANTARA', official:'https://tv9.co.id', stream:'', desc:'TV lokal Surabaya — religi NU & budaya'},
+  {id:'malangtv', name:'Malang TV', sub:'MALANG TV', cat:'Lokal', lokal:true, daerah:'Jawa Timur • Malang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#2563eb,#7c3aed)', logo:'MALANG TV', official:'https://www.malangtv.co.id', stream:'', desc:'TV lokal Malang Raya'},
+  // --- BALI & NUSA TENGGARA ---
+  {id:'tvribali', name:'TVRI Bali', sub:'TVRI BALI', cat:'Lokal', lokal:true, daerah:'Bali • Denpasar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#f59e0b)', logo:'TVRI', logoSub:'BALI', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Bali — Denpasar'},
+  {id:'balitv', name:'Bali TV', sub:'BALI TV', cat:'Lokal', lokal:true, daerah:'Bali • Denpasar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#b45309,#78350f)', logo:'BALI TV', official:'https://www.balitv.tv', stream:'', desc:'TV lokal Bali — budaya & pariwisata Bali'},
+  {id:'kompastvdewata', name:'Bali TV / Dewata', sub:'DEWATA TV', cat:'Lokal', lokal:true, daerah:'Bali • Denpasar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0ea5e9,#065f46)', logo:'DEWATA TV', official:'https://www.balitv.tv', stream:'', desc:'Channel lokal Bali — berita Dewata'},
+  // --- SUMATERA ---
+  {id:'tvriaceh', name:'TVRI Aceh', sub:'TVRI ACEH', cat:'Lokal', lokal:true, daerah:'Aceh • Banda Aceh', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#15803d)', logo:'TVRI', logoSub:'ACEH', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Aceh — Banda Aceh'},
+  {id:'tvrisumut', name:'TVRI Sumatera Utara', sub:'TVRI SUMUT', cat:'Lokal', lokal:true, daerah:'Sumatera Utara • Medan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#b45309)', logo:'TVRI', logoSub:'SUMATERA UTARA', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Sumut — Medan'},
+  {id:'deltvmedan', name:'Deli TV', sub:'DELI TV', cat:'Lokal', lokal:true, daerah:'Sumatera Utara • Medan', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#dc2626,#111827)', logo:'DELI TV', official:'https://www.tvri.go.id', stream:'', desc:'TV lokal Medan, Sumatera Utara'},
+  {id:'riautelevisi', name:'Riau Televisi (Rtv)', sub:'RIAU TV', cat:'Lokal', lokal:true, daerah:'Riau • Pekanbaru', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#f59e0b,#92400e)', logo:'RIAU TV', official:'https://riautelevisi.com', stream:'', desc:'TV lokal Riau — Pekanbaru'},
+  {id:'batamtv', name:'Batam TV', sub:'BATAM TV', cat:'Lokal', lokal:true, daerah:'Kep. Riau • Batam', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0369a1,#0c4a6e)', logo:'BATAM TV', official:'https://www.batamtvnews.com', stream:'', desc:'TV lokal Batam, Kepulauan Riau'},
+  {id:'padangtv', name:'Padang TV', sub:'PADANG TV', cat:'Lokal', lokal:true, daerah:'Sumatera Barat • Padang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#991b1b,#111827)', logo:'PADANG TV', official:'https://www.padangtv.id', stream:'', desc:'TV lokal Padang, Sumatera Barat'},
+  {id:'tvrisumsel', name:'TVRI Sumatera Selatan', sub:'TVRI SUMSEL', cat:'Lokal', lokal:true, daerah:'Sumatera Selatan • Palembang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#dc2626)', logo:'TVRI', logoSub:'SUMATERA SELATAN', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Sumsel — Palembang'},
+  {id:'palembangtv', name:'Palembang TV (Paltv)', sub:'PALTV', cat:'Lokal', lokal:true, daerah:'Sumatera Selatan • Palembang', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#7c3aed,#312e81)', logo:'PALTV', official:'https://www.paltv.co.id', stream:'', desc:'TV lokal Palembang, Sumatera Selatan'},
+  // --- KALIMANTAN ---
+  {id:'tvrikaltim', name:'TVRI Kalimantan Timur', sub:'TVRI KALTIM', cat:'Lokal', lokal:true, daerah:'Kaltim • Samarinda', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#059669)', logo:'TVRI', logoSub:'KALIMANTAN TIMUR', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Kaltim — Samarinda & IKN'},
+  {id:'dutatv', name:'Duta TV', sub:'DUTA TV', cat:'Lokal', lokal:true, daerah:'Kalsel • Banjarmasin', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#2563eb,#1e3a8a)', logo:'DUTA TV', official:'https://dutatv.com', stream:'', desc:'TV lokal Banjarmasin, Kalimantan Selatan'},
+  {id:'banjartv', name:'Banjar TV', sub:'BANJAR TV', cat:'Lokal', lokal:true, daerah:'Kalsel • Banjarmasin', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#059669,#064e3b)', logo:'BANJAR TV', official:'https://www.banjartv.co.id', stream:'', desc:'TV lokal Banjar — budaya Banjar'},
+  {id:'ruaitv', name:'Ruai TV', sub:'RUAI TV', cat:'Lokal', lokal:true, daerah:'Kalbar • Pontianak', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#b91c1c,#78350f)', logo:'RUAI TV', official:'https://ruaitv.co.id', stream:'', desc:'TV lokal Pontianak, Kalimantan Barat'},
+  {id:'tvrikalteng', name:'TVRI Kalimantan Tengah', sub:'TVRI KALTENG', cat:'Lokal', lokal:true, daerah:'Kalteng • Palangka Raya', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#b45309)', logo:'TVRI', logoSub:'KALIMANTAN TENGAH', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Kalteng — Palangka Raya'},
+  // --- SULAWESI & PAPUA ---
+  {id:'tvrisulsel', name:'TVRI Sulawesi Selatan', sub:'TVRI SULSEL', cat:'Lokal', lokal:true, daerah:'Sulsel • Makassar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#dc2626)', logo:'TVRI', logoSub:'SULAWESI SELATAN', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Sulsel — Makassar'},
+  {id:'fajartv', name:'Fajar TV', sub:'FAJAR TV', cat:'Lokal', lokal:true, daerah:'Sulsel • Makassar', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0ea5e9,#1e40af)', logo:'FAJAR TV', official:'https://fajar.co.id', stream:'', desc:'TV lokal Makassar, Sulawesi Selatan'},
+  {id:'tvrisulut', name:'TVRI Sulawesi Utara', sub:'TVRI SULUT', cat:'Lokal', lokal:true, daerah:'Sulut • Manado', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#0ea5e9)', logo:'TVRI', logoSub:'SULAWESI UTARA', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Sulut — Manado'},
+  {id:'tvripapua', name:'TVRI Papua', sub:'TVRI PAPUA', cat:'Lokal', lokal:true, daerah:'Papua • Jayapura', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#f59e0b)', logo:'TVRI', logoSub:'PAPUA', official:'https://www.tvri.go.id', stream:'', desc:'TVRI daerah Papua — Jayapura'},
+  {id:'tvriworld', name:'TVRI World', sub:'TVRI WORLD', cat:'Lokal', lokal:true, daerah:'Nasional • Bahasa Inggris', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#005baa)', logo:'TVRI WORLD', official:'https://www.tvri.go.id', stream:'', desc:'Channel TVRI berbahasa Inggris untuk dunia'},
 
   // ============ LUAR NEGERI — FOKUS ASIA (KOREA, JEPANG & ASIA LAINNYA DULUAN) ============
   // --- KOREA SELATAN ---
@@ -393,7 +454,7 @@ function cardHTML(ch){
     </div>
     <div class="card-body">
       <b>${ch.name}</b><span>${ch.desc}</span>
-      <div class="tags"><span class="tag">${ch.region==='indo'?'🇮🇩 Indonesia':(COUNTRY_FLAGS[ch.country]||'🌍')+' '+ch.country}</span><span class="tag">${ch.cat}</span>${ch.stream?'<span class="tag">▶ Bisa Play di Sini</span>':'<span class="tag">↗ Via Situs Resmi</span>'}</div>
+      <div class="tags"><span class="tag">${ch.region==='indo'?'🇮🇩 Indonesia':(COUNTRY_FLAGS[ch.country]||'🌍')+' '+ch.country}</span>${ch.daerah?`<span class="tag">📍 ${ch.daerah}</span>`:''}<span class="tag">${ch.cat}</span>${ch.stream?'<span class="tag">▶ Bisa Play di Sini</span>':'<span class="tag">↗ Via Situs Resmi</span>'}</div>
       <div class="play-row"><span class="play-ic">${ch.stream?'▶':'↗'}</span> ${ch.stream?'Nonton di Player':'Buka Situs Resmi'}</div>
     </div>
   </button>`;
@@ -404,26 +465,30 @@ function render(){
   const q=query.trim().toLowerCase();
   const match=(ch)=>{
     const inFilter = activeFilter==='all' || ch.region===activeFilter || ch.cat===activeFilter;
-    const inQuery = !q || (ch.name+' '+ch.cat+' '+ch.country+' '+ch.desc).toLowerCase().includes(q);
+    const inQuery = !q || (ch.name+' '+ch.cat+' '+ch.country+' '+(ch.daerah||'')+' '+ch.desc).toLowerCase().includes(q);
     const inCountry = ch.region!=='world' || activeCountry==='all' || ch.country===activeCountry;
     return inFilter && inQuery && inCountry;
   };
-  const indo=CHANNELS.filter(c=>c.region==='indo' && match(c));
+  const indo=CHANNELS.filter(c=>c.region==='indo' && !c.lokal && match(c));
+  const lokal=CHANNELS.filter(c=>c.lokal && match(c));
   const world=CHANNELS.filter(c=>c.region==='world' && match(c));
   document.getElementById('grid-indo').innerHTML=indo.map(cardHTML).join('');
+  const lokalEl=document.getElementById('grid-lokal'); if(lokalEl) lokalEl.innerHTML=lokal.map(cardHTML).join('');
   document.getElementById('grid-world').innerHTML=world.map(cardHTML).join('');
-  document.getElementById('count-indo').textContent=indo.length+' channel';
+  document.getElementById('count-indo').textContent=indo.length+' channel nasional';
+  const cl=document.getElementById('count-lokal'); if(cl) cl.textContent=lokal.length+' channel lokal';
   document.getElementById('count-world').textContent=world.length+' channel';
   // Kalau lagi filter 1 negara asing, fokus ke grid luar negeri aja
   const focusingCountry = activeCountry!=='all';
   document.getElementById('section-indo').style.display=(!focusingCountry && indo.length)?'':'none';
+  const slokal=document.getElementById('section-lokal'); if(slokal) slokal.style.display=(!focusingCountry && lokal.length)?'':'none';
   document.getElementById('section-world').style.display=(world.length || focusingCountry)?'':'none';
   const sl=document.getElementById('selectedLine');
   if(focusingCountry){
     sl.innerHTML=`<span>Menampilkan: <b>${COUNTRY_FLAGS[activeCountry]||''} ${activeCountry}</b> — ${world.length} channel</span> <button onclick="setCountry('all')">✕ Lihat Semua Negara</button>`;
     sl.classList.add('show');
   } else { sl.classList.remove('show'); sl.innerHTML=''; }
-  document.getElementById('empty').classList.toggle('show', indo.length+world.length===0 && !focusingCountry || (focusingCountry && world.length===0));
+  document.getElementById('empty').classList.toggle('show', indo.length+lokal.length+world.length===0 && !focusingCountry || (focusingCountry && world.length===0));
   if(current) document.querySelectorAll('.card').forEach(c=>c.classList.toggle('playing', c.dataset.id===current.id));
 }
 document.getElementById('flagGrid').addEventListener('click', e=>{
