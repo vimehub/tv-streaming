@@ -38,6 +38,9 @@
   .player-shell{background:#000;border:1px solid var(--line);border-radius:18px;overflow:hidden}
   .video-wrap{position:relative;background:#000;aspect-ratio:16/9;max-height:72vh;margin:0 auto;width:100%}
   .video-wrap video{width:100%;height:100%;display:block;background:#000}
+  .video-wrap video.hide{display:none}
+  .video-wrap iframe{width:100%;height:100%;display:none;border:0;background:#000}
+  .video-wrap iframe.show{display:block}
   .buffering{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,0,0,.35);color:#fff;font-size:14px;font-weight:600;gap:10px;text-align:center;padding:16px}
   .buffering.show{display:grid}
   .spinner{width:38px;height:38px;border-radius:50%;border:4px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .8s linear infinite;margin:0 auto}
@@ -108,6 +111,7 @@
   <section class="player-shell" id="playerShell">
     <div class="video-wrap">
       <video id="video" controls playsinline autoplay muted></video>
+      <iframe id="embedFrame" title="Player channel embed" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
       <div class="buffering" id="buffering"><div><div class="spinner"></div><div style="margin-top:10px">Memuat siaran… biasanya ±15 detik</div></div></div>
       <div class="player-msg" id="playerMsg"></div>
     </div>
@@ -148,8 +152,8 @@
   <div class="empty" id="empty">Channel nggak ketemu. Coba kata kunci lain.</div>
 
   <footer>
-    Semua channel di atas diputar langsung di player ini memakai stream resmi dari server / CDN masing-masing stasiun TV.<br>
-    Channel besar seperti RCTI, SCTV, Kompas TV, tvOne, Trans TV, Trans7, ANTV, dan NET./MDTV belum muncul karena stasiunnya tidak menyediakan stream web terbuka yang bisa diputar di luar situs / aplikasi resminya — sudah dicek ulang, termasuk stream CNN Indonesia &amp; Trans TV di server detik.com yang playlist-nya ternyata rusak (varian 404).
+    Semua channel di atas diputar langsung di player ini — sebagian memakai stream resmi dari server / CDN masing-masing stasiun TV, sebagian lagi (CNN Indonesia, Trans TV, Trans7) memakai player embed resmi dari situs stasiunnya.<br>
+    Channel besar seperti RCTI, SCTV, Kompas TV, tvOne, ANTV, dan NET./MDTV belum muncul karena stasiunnya tidak menyediakan stream web terbuka yang bisa diputar di luar situs / aplikasi resminya.
   </footer>
 </div>
 
@@ -160,6 +164,9 @@ const CHANNELS = [
   {id:'tvri', name:'TVRI Nasional', cat:'Umum', region:'indo', area:'Indonesia', color:'linear-gradient(135deg,#005baa,#e70011)', logo:'TVRI', stream:'https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8'},
   {id:'metrotv', name:'Metro TV', cat:'Berita', region:'indo', area:'Indonesia', color:'linear-gradient(135deg,#0b2a5b,#2563eb)', logo:'METRO TV', stream:'https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8'},
   {id:'cnbcid', name:'CNBC Indonesia', cat:'Berita', region:'indo', area:'Indonesia', color:'linear-gradient(135deg,#0f2a44,#7c3aed)', logo:'CNBC', logoSub:'INDONESIA', stream:'https://video.detik.com/livecnbc/smil:cnbctv/playlist.m3u8'},
+  {id:'cnnid', name:'CNN Indonesia', cat:'Berita', region:'indo', area:'Indonesia', color:'linear-gradient(135deg,#cc0000,#450a0a)', logo:'CNN', logoSub:'INDONESIA', embed:'https://tvivu.com/embed/cnn-indonesia-id'},
+  {id:'transtv', name:'Trans TV', cat:'Umum', region:'indo', area:'Indonesia', color:'linear-gradient(135deg,#f59e0b,#b45309)', logo:'TRANS TV', embed:'https://20.detik.com/live/trans-tv'},
+  {id:'trans7', name:'Trans7', cat:'Umum', region:'indo', area:'Indonesia', color:'linear-gradient(135deg,#dc2626,#7f1d1d)', logo:'TRANS 7', embed:'https://20.detik.com/live/trans-7'},
   // INDONESIA — DAERAH / LOKAL
   {id:'tvrijabar', name:'TVRI Jawa Barat', cat:'Lokal', region:'indo', area:'Bandung • Jawa Barat', color:'linear-gradient(135deg,#005baa,#0284c7)', logo:'TVRI', logoSub:'JAWA BARAT', stream:'https://ott-balancer.tvri.go.id/live/eds/Jabar/hls/Jabar.m3u8'},
   {id:'mqtv', name:'MQTV', cat:'Lokal', region:'indo', area:'Bandung • Jawa Barat', color:'linear-gradient(135deg,#059669,#065f46)', logo:'MQTV', stream:'https://5bf7b725107e5.streamlock.net/mqtv/mqtv/playlist.m3u8'},
@@ -194,6 +201,7 @@ const CHANNELS = [
 ];
 
 const video=document.getElementById('video');
+const frame=document.getElementById('embedFrame');
 const msg=document.getElementById('playerMsg');
 const buffering=document.getElementById('buffering');
 let hls=null, current=null, activeFilter='all', query='';
@@ -205,6 +213,17 @@ function setBuffering(on){ buffering.classList.toggle('show', !!on); }
 video.addEventListener('waiting', ()=>setBuffering(true));
 video.addEventListener('playing', ()=>{ setBuffering(false); hideMsg(); });
 video.addEventListener('canplay', ()=>setBuffering(false));
+frame.addEventListener('load', ()=>{ const s=frame.getAttribute('src'); if(s && s!=='about:blank') setBuffering(false); });
+
+function stopVideo(){
+  if(hls){ hls.destroy(); hls=null; }
+  video.pause();
+  video.removeAttribute('src'); video.load();
+}
+function stopFrame(){
+  frame.classList.remove('show');
+  frame.removeAttribute('src');
+}
 
 function playChannel(ch, scroll){
   current=ch;
@@ -215,7 +234,23 @@ function playChannel(ch, scroll){
   nl.textContent=ch.logo; nl.style.background=ch.color;
   hideMsg(); setBuffering(true);
   if(scroll) document.getElementById('playerShell').scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById('muteBtn').style.display = ch.embed ? 'none' : '';
 
+  // Channel tipe embed: diputar lewat player iframe resmi dari situs stasiunnya (bukan YouTube).
+  if(ch.embed){
+    stopVideo();
+    video.classList.add('hide');
+    frame.classList.add('show');
+    // Reset dulu ke about:blank supaya tombol Muat Ulang beneran memuat ulang player-nya.
+    frame.src='about:blank';
+    setTimeout(()=>{ if(current===ch) frame.src=ch.embed; }, 60);
+    // Jaga-jaga overlay buffering tetap tampil kalau iframe lambat / gagal termuat.
+    setTimeout(()=>setBuffering(false), 6000);
+    return;
+  }
+
+  stopFrame();
+  video.classList.remove('hide');
   if(hls){ hls.destroy(); hls=null; }
   video.removeAttribute('src'); video.load();
 
