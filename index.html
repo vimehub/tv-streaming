@@ -270,7 +270,7 @@ const CHANNELS = [
   {id:'metrotv', name:'Metro TV', sub:'METRO TV', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0b2a5b,#2563eb)', logo:'METRO TV', official:'https://www.metrotvnews.com', stream:'', yt:'UCzl0OrB3-ehunyotIQvK77A', desc:'Berita 24 jam'},
   {id:'tvone', name:'tvOne', sub:'tvONE', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#b91c1c,#111827)', logo:'tvOne', official:'https://www.tvonenews.com', stream:'', yt:'UCER4rvDnRBPr_ncYW4UCZjg', desc:'Berita & olahraga'},
   {id:'kompastv', name:'Kompas TV', sub:'KOMPAS TV', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#005baa,#00a19a)', logo:'KOMPAS TV', official:'https://www.kompas.tv', stream:'', yt:'UC5BMIWZe9isJXLZZWPWvBlg', desc:'Berita & talkshow'},
-  {id:'cnnid', name:'CNN Indonesia', sub:'CNN ID', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#cc0000)', logo:'CNN', logoSub:'INDONESIA', official:'https://www.cnnindonesia.com/tv', stream:'', yt:'UCKII0Ml9S5wneKbHswmUrIQ', desc:'Berita nasional 24 jam'},
+  {id:'cnnid', name:'CNN Indonesia', sub:'CNN ID', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#111827,#cc0000)', logo:'CNN', logoSub:'INDONESIA', official:'https://www.cnnindonesia.com/tv', stream:'', ytv:'jWfQVN-XKSg', desc:'Berita nasional 24 jam'},
   {id:'cnbcid', name:'CNBC Indonesia', sub:'CNBC ID', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#0f2a44,#7c3aed)', logo:'CNBC', logoSub:'INDONESIA', official:'https://www.cnbcindonesia.com/tv', stream:'', desc:'Bisnis & ekonomi'},
   {id:'inews', name:'iNews', sub:'iNEWS', cat:'Berita', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#dc2626,#7f1d1d)', logo:'iNews', official:'https://www.inews.id', stream:'', desc:'Berita MNC Group'},
   {id:'rtv', name:'RTV', sub:'RTV', cat:'Anak', region:'indo', country:'Indonesia', color:'linear-gradient(135deg,#f59e0b,#ef4444)', logo:'RTV', official:'https://www.rtv.co.id', stream:'', desc:'Animasi & keluarga'},
@@ -427,6 +427,12 @@ function playChannel(ch){
   video.removeAttribute('src'); video.load();
   ytFrame.removeAttribute('src'); ytFrame.style.display='none'; video.style.display='block';
 
+  if(ch.ytv){
+    video.style.display='none';
+    ytFrame.style.display='block';
+    ytFrame.src='https://www.youtube-nocookie.com/embed/'+ch.ytv+'?autoplay=1&mute=1&rel=0';
+    return;
+  }
   if(ch.yt){
     video.style.display='none';
     ytFrame.style.display='block';
@@ -464,8 +470,8 @@ function cardHTML(ch){
     </div>
     <div class="card-body">
       <b>${ch.name}</b><span>${ch.desc}</span>
-      <div class="tags"><span class="tag">${ch.region==='indo'?'🇮🇩 Indonesia':(COUNTRY_FLAGS[ch.country]||'🌍')+' '+ch.country}</span>${ch.daerah?`<span class="tag">📍 ${ch.daerah}</span>`:''}<span class="tag">${ch.cat}</span>${(ch.yt||ch.stream)?'<span class="tag">▶ Bisa Play di Sini</span>':'<span class="tag">↗ Live di Situs Resmi</span>'}</div>
-      <div class="play-row"><span class="play-ic">▶</span> ${(ch.yt||ch.stream)?'Nonton di Player':'Buka di Player'}</div>
+      <div class="tags"><span class="tag">${ch.region==='indo'?'🇮🇩 Indonesia':(COUNTRY_FLAGS[ch.country]||'🌍')+' '+ch.country}</span>${ch.daerah?`<span class="tag">📍 ${ch.daerah}</span>`:''}<span class="tag">${ch.cat}</span>${(ch.ytv||ch.yt||ch.stream)?'<span class="tag">▶ Bisa Play di Sini</span>':'<span class="tag">↗ Live di Situs Resmi</span>'}</div>
+      <div class="play-row"><span class="play-ic">▶</span> ${(ch.ytv||ch.yt||ch.stream)?'Nonton di Player':'Buka di Player'}</div>
     </div>
   </button>`;
 }
